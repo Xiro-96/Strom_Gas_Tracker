@@ -67,7 +67,9 @@ describe('contractForecast', () => {
       contract: { ...base.contract, deliveryEnd: '2026-11-30' },
     });
     expect(early.offsetBonusEur).toBe(0);
-    expect(early.bonusWarnings).toHaveLength(1);
+    expect(early.bonusWarnings).toEqual([
+      { kind: 'new_customer', amountEur: newCustomerBonus.amountEur, requiredEnd: '2026-12-31' },
+    ]);
   });
 
   it('zählt ausgezahlte Boni (Überweisung) nicht in den Saldo', () => {

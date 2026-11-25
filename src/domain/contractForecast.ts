@@ -15,7 +15,7 @@ import {
   recommendedInstallment,
   type InstallmentEntry,
 } from '@/domain/installments';
-import type { Bonus, EnergyType, ISODate } from '@/domain/types';
+import type { Bonus, BonusKind, EnergyType, ISODate } from '@/domain/types';
 
 export interface ContractForecastInput {
   contract: {
@@ -36,6 +36,12 @@ export interface ContractForecastInput {
   today: ISODate;
 }
 
+export interface BonusWarning {
+  kind: BonusKind;
+  amountEur: number;
+  requiredEnd: ISODate;
+}
+
 export interface ContractForecast {
   periodFrom: ISODate;
   /** Letzter Tag des Abrechnungszeitraums (inklusive). */
@@ -47,7 +53,8 @@ export interface ContractForecast {
   bonusEur: number;
   /** Davon mit der Rechnung verrechnet – nur diese mindern den Saldo. */
   offsetBonusEur: number;
-  bonusWarnings: string[];
+  /** Boni, deren Mindestbelieferung mit dem geplanten Lieferende nicht erreicht wird. */
+  bonusWarnings: BonusWarning[];
   installmentsEur: number;
   paidEur: number;
   remainingInstallments: number;
@@ -100,7 +107,7 @@ export function contractForecast(input: ContractForecastInput): ContractForecast
   const total = costBreakdown([...actualDaily, ...projected], contract, periods, periodFrom, end);
   const projectedKwh = projected.reduce((s, p) => s + p.kwh, 0);
 
-  const bonusWarnings: string[] = [];
+  const bonusWarnings: BonusWarning[] = [];
   let bonusEur = 0;
   let offsetBonusEur = 0;
   for (const bonus of input.bonuses) {
@@ -112,9 +119,11 @@ export function contractForecast(input: ContractForecastInput): ContractForecast
         bonus.requiresDeliveryMonths,
       );
       if (safety.ok === false) {
-        bonusWarnings.push(
-          `Bonus ${bonus.amountEur} € in Gefahr: Lieferung bis mindestens ${safety.requiredEnd} nötig.`,
-        );
+        bonusWarnings.push({
+          kind: bonus.kind,
+          amountEur: bonus.amountEur,
+          requiredEnd: safety.requiredEnd,
+        });
         continue;
       }
     }

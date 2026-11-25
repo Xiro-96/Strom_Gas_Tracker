@@ -1,4 +1,6 @@
 import {
+  describeBalance,
+  formatCt,
   formatDate,
   formatDateShort,
   formatEur,
@@ -45,5 +47,14 @@ describe('format (de-DE)', () => {
     expect(meterInputValue(14321.6, 1)).toBe('14321,6');
     expect(meterInputValue(21234.56, 3)).toBe('21234,560');
     expect(meterInputValue(1234, 0)).toBe('1234');
+  });
+
+  it('formatiert Preise und Salden', () => {
+    expect(formatCt(28.47)).toBe('28,47 ct/kWh');
+    expect(formatCt(9.0512)).toBe('9,0512 ct/kWh');
+    expect(describeBalance(-160).label).toBe('Guthaben');
+    expect(n(describeBalance(-160).amount)).toBe('160,00 €');
+    expect(describeBalance(42).label).toBe('Nachzahlung');
+    expect(describeBalance(0.2).label).toBe('Ausgeglichen');
   });
 });

@@ -119,28 +119,34 @@ test('Theme-Wahl überlebt einen Neustart ohne Aufblitzen', async ({ page }) => 
   await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#f7f8fa');
 });
 
-for (const theme of ['dark', 'light'] as const) {
-  test(`Barrierefreiheit (axe, WCAG AA) im ${theme === 'dark' ? 'dunklen' : 'hellen'} Design`, async ({
-    page,
-  }) => {
-    await page.addInitScript((value) => {
-      localStorage.setItem('sgt-theme', value);
-    }, theme);
-    for (const path of ['./', './#/mehr', './#/verlauf']) {
-      await page.goto(path);
-      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-      // Einblend-Animation abwarten, sonst misst axe halbtransparente Kontraste.
-      await page.waitForTimeout(400);
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-        .analyze();
-      const serious = results.violations
-        .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-        .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);
-      expect(serious, path).toEqual([]);
-    }
-  });
-}
+test.describe('Barrierefreiheit', () => {
+  // Ohne Service Worker: sonst erscheint der Offline-Toast zu zufälliger Zeit und axe misst ihn mitten
+  // in der Einblend-Animation (halbtransparent → falscher Kontrastfehler).
+  test.use({ serviceWorkers: 'block' });
+
+  for (const theme of ['dark', 'light'] as const) {
+    test(`Barrierefreiheit (axe, WCAG AA) im ${theme === 'dark' ? 'dunklen' : 'hellen'} Design`, async ({
+      page,
+    }) => {
+      await page.addInitScript((value) => {
+        localStorage.setItem('sgt-theme', value);
+      }, theme);
+      for (const path of ['./', './#/mehr', './#/verlauf']) {
+        await page.goto(path);
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+        // Einblend-Animation abwarten, sonst misst axe halbtransparente Kontraste.
+        await page.waitForTimeout(400);
+        const results = await new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+          .analyze();
+        const serious = results.violations
+          .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+          .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);
+        expect(serious, path).toEqual([]);
+      }
+    });
+  }
+});
 
 test.describe('Desktop', () => {
   test.use({ viewport: { width: 1280, height: 800 }, isMobile: false, hasTouch: false });

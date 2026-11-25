@@ -2,8 +2,12 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
 async function seriousViolations(page: Page) {
-  // Einblend-Animationen (Toasts, Seitenwechsel) abwarten – sonst misst axe halbtransparente Kontraste.
-  await page.waitForTimeout(600);
+  // Service Worker bereit (Offline-Toast ist dann erschienen), danach Einblend-Animationen abwarten –
+  // sonst misst axe halbtransparente Kontraste.
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.waitForTimeout(700);
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .analyze();

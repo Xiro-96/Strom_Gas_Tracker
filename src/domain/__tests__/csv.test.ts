@@ -48,7 +48,11 @@ describe('toReadingsCsv', () => {
     expect(csv.split('\r\n')[0]).toBe('Datum;Energie;Stand');
     expect(csv).toContain('03.11.2025;Strom;14321,6');
     expect(
-      parseReadingsCsv(csv).rows.map((r) => ({ date: r.date, energyType: r.energyType, value: r.value })),
+      parseReadingsCsv(csv).rows.map((r) => ({
+        date: r.date,
+        energyType: r.energyType,
+        value: r.value,
+      })),
     ).toEqual(rows);
   });
 });

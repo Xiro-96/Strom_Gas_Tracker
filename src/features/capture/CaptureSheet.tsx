@@ -316,6 +316,10 @@ function CaptureForm({
           <p className="text-muted-foreground">
             Neuen Stand eintippen – der letzte ist schon markiert.
           </p>
+        ) : last ? (
+          <p className="text-muted-foreground">
+            Die Vorschau erscheint, sobald der Stand plausibel ist.
+          </p>
         ) : (
           <p className="text-muted-foreground">
             Erster Stand – ab der nächsten Ablesung siehst du den Verbrauch.

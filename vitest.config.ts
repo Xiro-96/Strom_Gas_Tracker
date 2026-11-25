@@ -1,9 +1,17 @@
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig, mergeConfig } from 'vitest/config';
 import viteConfig from './vite.config.ts';
 
 export default mergeConfig(
   viteConfig,
   defineConfig({
+    resolve: {
+      alias: {
+        'virtual:pwa-register/react': fileURLToPath(
+          new URL('./src/test/mocks/pwa-register-react.ts', import.meta.url),
+        ),
+      },
+    },
     test: {
       globals: true,
       environment: 'jsdom',

@@ -4,7 +4,6 @@
   "version": "0.1.0",
   "description": "Strom & Gas Tracker – offline-first PWA für Zählerstände, Verträge, Boni und Fristen",
   "type": "module",
-  "license": "MIT",
   "engines": {
     "node": ">=22.22.0"
   },

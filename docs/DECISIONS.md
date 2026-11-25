@@ -51,3 +51,33 @@ Format: Datum · Entscheidung · Grund.
     ungenutzten Abhängigkeiten).
 16. **Messwerte Phase 0** (Lighthouse 12, mobil, lokaler Preview-Build): Performance 94,
     Accessibility 100, Best Practices 100, SEO 100. JS-Bundle ca. 137 KB gzip, Precache 15 Dateien.
+
+## Phase 1 – Zähler und Verbrauch (25.11.2026)
+
+17. **CSV-Import der Ablesungen aus Phase 4 vorgezogen** (Excel-DE, `;` oder Tab, Dezimalkomma). So
+    kommen echte Altdaten privat auf das Gerät, nie ins öffentliche Repo. Fehlende Zähler legt der
+    Import an; abweichende Stände am selben Tag werden nie überschrieben, sondern gemeldet.
+18. **Gasfaktoren je Intervall:** Es gelten die Faktoren am Intervallbeginn (keine Aufteilung
+    innerhalb eines Intervalls). Das Formular in Phase 1 ersetzt die Faktoren (gelten dann für alle
+    Ablesungen); eine zeitabhängige Historie in der UI folgt in Phase 2.
+19. **Überlauf:** Ein Rückgang gilt nur dann als Überlauf, wenn die Vorkommastellen des Zählers bekannt
+    sind und Δ < Modulus/2 ist. Die Erfassung fragt nach („Bestätigen und speichern“).
+20. **Ausreißer:** Median der letzten 5 Intervalle, ab 2 Intervallen. Gas wird über die
+    Gradtag-Gewichte normiert, damit Winterwerte nicht als Tippfehler gelten.
+21. **Ablesestatus:** fällig ab dem Ableseintervall, überfällig ab dem 1,5-fachen (14 → 21 Tage).
+22. **Schnellerfassung als Route** `/erfassen[/strom|gas]` mit der Übersicht dahinter (Deep-Link,
+    Manifest-Shortcut, Zurück-Taste schließt). Formularzustand per `key`-Remount statt `setState` in
+    Effekten (React-Compiler-Regeln).
+23. **Diagrammfarben:** eigene Tokens `--chart-electricity` / `--chart-gas`, mit dem
+    dataviz-Validator für hell und dunkel geprüft (Lightness-Band, CVD, Kontrast). Das Vorjahr ist
+    eine Vergleichsreihe (gestrichelt bzw. blasser Balken), keine eigene Kategorie.
+24. **Bundle:** Nur Übersicht und Schnellerfassung laden sofort. Alle anderen Bereiche, die
+    Auswertung (Recharts) und das Zählerformular (zod, react-hook-form) werden lazy geladen.
+    Start-JS ca. 135 KB gzip. Lighthouse mobil (lokaler Preview-Build): Performance 90,
+    Accessibility 100, Best Practices 100.
+25. **Fotos** werden in Phase 1 unkomprimiert gespeichert; Komprimierung (≤ 1600 px) folgt in Phase 4.
+26. **Ablesungen am selben Tag:** Ausbau vor Einbau sortiert (`sortReadings`), damit der Zählerwechsel
+    ohne Sprung ausgewertet wird.
+27. **Jahresprognose (kWh) aus Phase 2 vorgezogen** – der Nutzer braucht sie für den anstehenden
+    Neuabschluss. Strom: letzte 365 Tage, sonst Ø 90 Tage × 365. Gas: Normaljahr über höchstens die
+    letzten 365 Tage. Unter 3 Intervallen „unsicher“ mit ±20 % Spanne. Kosten in € folgen in Phase 2.

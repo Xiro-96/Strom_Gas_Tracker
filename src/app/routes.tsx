@@ -1,16 +1,11 @@
 import type { RouteObject } from 'react-router';
 import { AppLayout } from '@/app/layout/AppLayout';
 import { RouteError } from '@/app/RouteError';
-import { AnalyticsPage } from '@/features/analytics/AnalyticsPage';
 import { CapturePage } from '@/features/capture/CapturePage';
-import { ContractsPage } from '@/features/contracts/ContractsPage';
-import { HistoryPage } from '@/features/history/HistoryPage';
-import { MorePage } from '@/features/more/MorePage';
 import { NotFoundPage } from '@/features/more/NotFoundPage';
-import { OffersPage } from '@/features/offers/OffersPage';
 import { OverviewPage } from '@/features/overview/OverviewPage';
-import { SwitchPage } from '@/features/switch/SwitchPage';
 
+/** Nur Übersicht und Erfassung laden sofort; alle anderen Bereiche bei Bedarf (Performance). */
 export const routes: RouteObject[] = [
   {
     path: '/',
@@ -18,14 +13,43 @@ export const routes: RouteObject[] = [
     errorElement: <RouteError />,
     children: [
       { index: true, element: <OverviewPage /> },
-      { path: 'verlauf', element: <HistoryPage /> },
+      {
+        path: 'verlauf',
+        lazy: async () => ({
+          Component: (await import('@/features/history/HistoryPage')).HistoryPage,
+        }),
+      },
       { path: 'erfassen', element: <CapturePage /> },
       { path: 'erfassen/:energy', element: <CapturePage /> },
-      { path: 'vertraege', element: <ContractsPage /> },
-      { path: 'auswertung', element: <AnalyticsPage /> },
-      { path: 'wechsel', element: <SwitchPage /> },
-      { path: 'angebote', element: <OffersPage /> },
-      { path: 'mehr', element: <MorePage /> },
+      {
+        path: 'vertraege',
+        lazy: async () => ({
+          Component: (await import('@/features/contracts/ContractsPage')).ContractsPage,
+        }),
+      },
+      {
+        // Diagramme (Recharts) erst bei Bedarf laden – hält die Übersicht schlank.
+        path: 'auswertung',
+        lazy: async () => ({
+          Component: (await import('@/features/analytics/AnalyticsPage')).AnalyticsPage,
+        }),
+      },
+      {
+        path: 'wechsel',
+        lazy: async () => ({
+          Component: (await import('@/features/switch/SwitchPage')).SwitchPage,
+        }),
+      },
+      {
+        path: 'angebote',
+        lazy: async () => ({
+          Component: (await import('@/features/offers/OffersPage')).OffersPage,
+        }),
+      },
+      {
+        path: 'mehr',
+        lazy: async () => ({ Component: (await import('@/features/more/MorePage')).MorePage }),
+      },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

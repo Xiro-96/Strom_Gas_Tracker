@@ -71,8 +71,10 @@ Format: Datum · Entscheidung · Grund.
 23. **Diagrammfarben:** eigene Tokens `--chart-electricity` / `--chart-gas`, mit dem
     dataviz-Validator für hell und dunkel geprüft (Lightness-Band, CVD, Kontrast). Das Vorjahr ist
     eine Vergleichsreihe (gestrichelt bzw. blasser Balken), keine eigene Kategorie.
-24. **Bundle:** Auswertung (Recharts) und Zählerformular (zod, react-hook-form) werden lazy geladen;
-    Start-JS ca. 202 KB gzip.
+24. **Bundle:** Nur Übersicht und Schnellerfassung laden sofort. Alle anderen Bereiche, die
+    Auswertung (Recharts) und das Zählerformular (zod, react-hook-form) werden lazy geladen.
+    Start-JS ca. 135 KB gzip. Lighthouse mobil (lokaler Preview-Build): Performance 90,
+    Accessibility 100, Best Practices 100.
 25. **Fotos** werden in Phase 1 unkomprimiert gespeichert; Komprimierung (≤ 1600 px) folgt in Phase 4.
 26. **Ablesungen am selben Tag:** Ausbau vor Einbau sortiert (`sortReadings`), damit der Zählerwechsel
     ohne Sprung ausgewertet wird.

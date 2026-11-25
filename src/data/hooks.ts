@@ -1,9 +1,25 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import {
+  bills,
+  bonuses,
+  listContracts,
+  pricePeriods,
+  transactions,
+} from '@/data/repositories/contracts';
 import { hasDemoData } from '@/data/repositories/demo';
 import { listMeters } from '@/data/repositories/meters';
 import { listReadings } from '@/data/repositories/readings';
 import { getSettings } from '@/data/repositories/settings';
-import type { Meter, Reading, Settings } from '@/domain/types';
+import type {
+  Bill,
+  Bonus,
+  Contract,
+  Meter,
+  PricePeriod,
+  Reading,
+  Settings,
+  Transaction,
+} from '@/domain/types';
 
 /** Live-Abfragen für Komponenten – `undefined` heißt „lädt noch“. */
 export function useMeters(): Meter[] | undefined {
@@ -20,4 +36,26 @@ export function useSettings(): Settings | undefined {
 
 export function useHasDemoData(): boolean | undefined {
   return useLiveQuery(hasDemoData, []);
+}
+
+export interface ContractData {
+  contracts: Contract[];
+  pricePeriods: PricePeriod[];
+  bonuses: Bonus[];
+  bills: Bill[];
+  transactions: Transaction[];
+}
+
+/** Alle Verträge samt Preisen, Boni, Rechnungen und Transaktionen – live. */
+export function useContractData(): ContractData | undefined {
+  return useLiveQuery(async () => {
+    const [c, p, b, bi, t] = await Promise.all([
+      listContracts(),
+      pricePeriods.list(),
+      bonuses.list(),
+      bills.list(),
+      transactions.list(),
+    ]);
+    return { contracts: c, pricePeriods: p, bonuses: b, bills: bi, transactions: t };
+  }, []);
 }

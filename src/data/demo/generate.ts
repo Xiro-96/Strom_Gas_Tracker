@@ -1,6 +1,6 @@
 import { addDays, daysBetween, eachDay } from '@/domain/dates';
 import { dayWeight } from '@/domain/distribution';
-import type { Bonus, Contract, ISODate, Meter, PricePeriod, Reading } from '@/domain/types';
+import type { Bill, Bonus, Contract, ISODate, Meter, PricePeriod, Reading } from '@/domain/types';
 
 /**
  * Erfundene Demo-Daten (Spec Phase 1): 2 Jahre, Ablesungen alle 14–21 Tage, saisonal,
@@ -12,6 +12,7 @@ export interface DemoData {
   contracts: Contract[];
   pricePeriods: PricePeriod[];
   bonuses: Bonus[];
+  bills: Bill[];
 }
 
 function mulberry32(seed: number) {
@@ -117,6 +118,7 @@ export function generateDemoData(today: ISODate, seed = 42): DemoData {
   const contracts: Contract[] = [];
   const pricePeriods: PricePeriod[] = [];
   const bonuses: Bonus[] = [];
+  const bills: Bill[] = [];
   const offers = {
     electricity: [
       {
@@ -176,6 +178,21 @@ export function generateDemoData(today: ISODate, seed = 42): DemoData {
         basePriceEurPerYear: offer.gp,
         enteredAs: 'ct_per_kwh',
       });
+      if (nextStart) {
+        // Beendete Verträge haben eine (erfundene) Schlussrechnung mit Guthaben.
+        bills.push({
+          ...base,
+          id: id(),
+          contractId: contract.id,
+          kind: 'final',
+          periodFrom: deliveryStart,
+          periodTo: addDays(nextStart, -1),
+          issuedAt: addDays(nextStart, 28),
+          balanceEur: -Math.round(40 + rand() * 80),
+          bonusIncluded: i > 0,
+          balanceSettledAt: addDays(nextStart, 38),
+        });
+      }
       if (i > 0) {
         bonuses.push({
           ...base,
@@ -193,5 +210,5 @@ export function generateDemoData(today: ISODate, seed = 42): DemoData {
     });
   }
 
-  return { meters: [strom, gas], readings, contracts, pricePeriods, bonuses };
+  return { meters: [strom, gas], readings, contracts, pricePeriods, bonuses, bills };
 }

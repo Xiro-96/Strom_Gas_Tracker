@@ -1,7 +1,6 @@
 import type { RouteObject } from 'react-router';
 import { AppLayout } from '@/app/layout/AppLayout';
 import { RouteError } from '@/app/RouteError';
-import { AnalyticsPage } from '@/features/analytics/AnalyticsPage';
 import { CapturePage } from '@/features/capture/CapturePage';
 import { ContractsPage } from '@/features/contracts/ContractsPage';
 import { HistoryPage } from '@/features/history/HistoryPage';
@@ -22,7 +21,13 @@ export const routes: RouteObject[] = [
       { path: 'erfassen', element: <CapturePage /> },
       { path: 'erfassen/:energy', element: <CapturePage /> },
       { path: 'vertraege', element: <ContractsPage /> },
-      { path: 'auswertung', element: <AnalyticsPage /> },
+      {
+        // Diagramme (Recharts) erst bei Bedarf laden – hält die Übersicht schlank.
+        path: 'auswertung',
+        lazy: async () => ({
+          Component: (await import('@/features/analytics/AnalyticsPage')).AnalyticsPage,
+        }),
+      },
       { path: 'wechsel', element: <SwitchPage /> },
       { path: 'angebote', element: <OffersPage /> },
       { path: 'mehr', element: <MorePage /> },

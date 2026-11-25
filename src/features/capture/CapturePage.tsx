@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { CaptureSheet } from '@/features/capture/CaptureSheet';
 import { OverviewPage } from '@/features/overview/OverviewPage';
-import { MeterFormDialog } from '@/features/settings/MeterFormDialog';
+import { MeterFormDialog } from '@/features/settings/LazyMeterFormDialog';
 import { energyFromSlug } from '@/features/shared/energy';
 
 /** /erfassen[/strom|gas]: Übersicht im Hintergrund, Schnellerfassung als Sheet darüber. */

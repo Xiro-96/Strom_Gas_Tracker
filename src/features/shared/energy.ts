@@ -18,7 +18,7 @@ export const ENERGY: Record<EnergyType, EnergyMeta> = {
     icon: Zap,
     text: 'text-electricity',
     soft: 'bg-electricity-soft',
-    color: 'var(--electricity)',
+    color: 'var(--chart-electricity)',
   },
   gas: {
     label: 'Gas',
@@ -26,7 +26,7 @@ export const ENERGY: Record<EnergyType, EnergyMeta> = {
     icon: Flame,
     text: 'text-gas',
     soft: 'bg-gas-soft',
-    color: 'var(--gas)',
+    color: 'var(--chart-gas)',
   },
 };
 

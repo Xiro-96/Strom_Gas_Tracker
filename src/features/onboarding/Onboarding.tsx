@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { loadDemoData } from '@/data/repositories/demo';
 import { ImportDialog } from '@/features/settings/ImportDialog';
-import { MeterFormDialog } from '@/features/settings/MeterFormDialog';
+import { MeterFormDialog } from '@/features/settings/LazyMeterFormDialog';
 
 /** Erster Start: Zähler anlegen, Altdaten importieren oder mit Demo-Daten ausprobieren. */
 export function Onboarding() {

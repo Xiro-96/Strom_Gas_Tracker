@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useMeters } from '@/data/hooks';
 import type { Meter } from '@/domain/types';
-import { MeterFormDialog } from '@/features/settings/MeterFormDialog';
+import { MeterFormDialog } from '@/features/settings/LazyMeterFormDialog';
 import { ENERGY } from '@/features/shared/energy';
 import { formatDate, formatNumber } from '@/lib/format';
 import { cn } from '@/lib/utils';

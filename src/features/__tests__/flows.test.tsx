@@ -62,6 +62,17 @@ describe('Onboarding', () => {
   });
 });
 
+describe('Übersicht', () => {
+  it('zeigt die Jahresprognose – bei wenig Daten als unsicher', async () => {
+    await stromMitHistorie();
+    renderRoute('/');
+    const prognose = await screen.findByText(/Jahresprognose/);
+    // 10 kWh/Tag × 365, nur 2 Intervalle → unsicher (Spec 6.4)
+    expect(prognose.closest('p')).toHaveTextContent(/≈\s?3\.650\skWh/);
+    expect(prognose.closest('p')).toHaveTextContent(/unsicher/);
+  });
+});
+
 describe('Schnellerfassung', () => {
   it('belegt den letzten Stand vor, zeigt die Vorschau und speichert', async () => {
     const user = userEvent.setup();

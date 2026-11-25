@@ -78,3 +78,6 @@ Format: Datum · Entscheidung · Grund.
 25. **Fotos** werden in Phase 1 unkomprimiert gespeichert; Komprimierung (≤ 1600 px) folgt in Phase 4.
 26. **Ablesungen am selben Tag:** Ausbau vor Einbau sortiert (`sortReadings`), damit der Zählerwechsel
     ohne Sprung ausgewertet wird.
+27. **Jahresprognose (kWh) aus Phase 2 vorgezogen** – der Nutzer braucht sie für den anstehenden
+    Neuabschluss. Strom: letzte 365 Tage, sonst Ø 90 Tage × 365. Gas: Normaljahr über höchstens die
+    letzten 365 Tage. Unter 3 Intervallen „unsicher“ mit ±20 % Spanne. Kosten in € folgen in Phase 2.

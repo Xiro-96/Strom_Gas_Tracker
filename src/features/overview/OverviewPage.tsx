@@ -54,6 +54,7 @@ export function OverviewPage() {
                   key={energy}
                   analysis={analysis}
                   readingIntervalDays={data.settings.readingIntervalDays}
+                  baseLoadShare={data.settings.gasBaseLoadShare}
                 />
               ) : null;
             })}

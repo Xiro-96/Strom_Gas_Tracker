@@ -22,6 +22,7 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - [x] Übersicht (Verbrauchsteil) und Diagramme 1–3
 - [x] Demo-Daten: 2 Jahre, Ablesungen alle 14–21 Tage, realistische Saisonalität, zwei Anbieterwechsel, erfundene Anbieter
 - [x] Zusätzlich (aus Phase 4 vorgezogen): CSV-Import der Ablesungen (Excel-DE)
+- [x] Zusätzlich (aus Phase 2 vorgezogen, auf Wunsch): Jahresprognose in kWh je Energieart (6.4), Gas zusätzlich in m³
 - [x] **Abnahme:** Erfassung < 10 s (E2E), Testfälle G, I und Umrechnungsteil von B grün, Diagramme mit Demo-Daten geprüft
 
 ## Phase 2 – Verträge, Preise, Boni, Kosten
@@ -30,7 +31,7 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - [ ] Preiseingabe in ct/kWh oder €/m³, Grundpreis in €/Monat oder €/Jahr, Gasfaktoren am Zähler
 - [ ] Boni mit Status-Workflow und Bonus-Sicherheitscheck
 - [ ] Abschlagsplan, Transaktionen, Rechnungen
-- [ ] Kosten-Engine, Effektivpreis, Prognose (Promille-Methode), Abschlags-Check
+- [ ] Kosten-Engine, Effektivpreis, Prognose in € (Verbrauchsprognose kWh seit Phase 1), Abschlags-Check
 - [ ] Diagramme 4, 5 und 7; Kostenkarten in der Übersicht; „So gerechnet“-Popover
 - [ ] **Abnahme:** Testfälle A, B, C, D, F und H grün
 

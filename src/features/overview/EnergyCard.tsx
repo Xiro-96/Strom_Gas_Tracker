@@ -4,10 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { EnergyAnalysis } from '@/domain/analysis';
 import { lastWindowAverage, readingStatus, trendVsPreviousYear } from '@/domain/consumption';
 import { todayISO } from '@/domain/dates';
+import { forecastAnnual, type AnnualForecast } from '@/domain/forecast';
+import { gasFactorsAt } from '@/domain/gas';
 import { Sparkline } from '@/features/overview/Sparkline';
 import { ENERGY } from '@/features/shared/energy';
 import {
   formatDate,
+  formatKwh,
   formatMeterValue,
   formatNumber,
   formatRelativeDays,
@@ -15,12 +18,20 @@ import {
 } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
+const BASIS_LABEL: Record<AnnualForecast['method'], string> = {
+  last365: 'Basis: letzte 365 Tage',
+  normalYear: 'Normaljahr (gradtagbereinigt)',
+  avg90: 'Ø 90 Tage × 365',
+};
+
 export function EnergyCard({
   analysis,
   readingIntervalDays,
+  baseLoadShare,
 }: {
   analysis: EnergyAnalysis;
   readingIntervalDays: number;
+  baseLoadShare: number;
 }) {
   const meta = ENERGY[analysis.energyType];
   const Icon = meta.icon;
@@ -29,6 +40,15 @@ export function EnergyCard({
   const last = analysis.lastReading;
   const status = readingStatus(last?.date, todayISO(), readingIntervalDays);
   const meter = analysis.currentMeter;
+  const forecast = forecastAnnual(analysis.daily, analysis.intervals, {
+    energyType: analysis.energyType,
+    baseLoadShare,
+  });
+  const factors = meter && last ? gasFactorsAt(meter, last.date) : undefined;
+  const forecastM3 =
+    forecast && factors && analysis.energyType === 'gas'
+      ? forecast.kwh / (factors.zFactor * factors.calorificValue)
+      : undefined;
 
   return (
     <Card className="relative overflow-hidden">
@@ -69,6 +89,22 @@ export function EnergyCard({
           </div>
           <Sparkline intervals={analysis.intervals} color={meta.color} />
         </div>
+        {forecast ? (
+          <p className="text-sm">
+            <span className="text-muted-foreground">Jahresprognose </span>
+            <span className="font-semibold tabular-nums">
+              {forecast.uncertain ? '≈ ' : ''}
+              {formatKwh(forecast.kwh)}
+            </span>
+            {forecastM3 !== undefined ? (
+              <span className="tabular-nums"> (≈ {formatNumber(forecastM3, 0, 0)} m³)</span>
+            ) : null}
+            <span className="text-muted-foreground">
+              {' · '}
+              {forecast.uncertain ? 'unsicher – noch wenig Daten' : BASIS_LABEL[forecast.method]}
+            </span>
+          </p>
+        ) : null}
         <div className="flex items-center justify-between gap-3 border-t pt-3 text-sm">
           <div className="min-w-0">
             {last && meter ? (

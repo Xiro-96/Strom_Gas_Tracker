@@ -1,0 +1,152 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@fontsource-variable/inter';
+
+/* Dark ist der Standard: `.dark` sitzt schon im ausgelieferten HTML, Light ist die Ausnahme. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Design-Tokens ───────────────────────────────────────────────────────────
+   Strom = Amber (Zap) · Gas = Blau/Cyan (Flame) · Ersparnis = Grün · Warnung = Orange · Gefahr = Rot
+   Light-Werte sind dunkler gewählt, damit Text auf Weiß WCAG AA (4,5 : 1) erreicht. */
+:root {
+  --radius: 1rem;
+
+  --background: oklch(0.985 0.003 255);
+  --foreground: oklch(0.21 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.02 260);
+  --primary: oklch(0.27 0.03 260);
+  --primary-foreground: oklch(0.985 0.003 255);
+  --secondary: oklch(0.955 0.006 255);
+  --secondary-foreground: oklch(0.27 0.03 260);
+  --muted: oklch(0.955 0.006 255);
+  --muted-foreground: oklch(0.47 0.02 260);
+  --accent: oklch(0.945 0.008 255);
+  --accent-foreground: oklch(0.27 0.03 260);
+  --border: oklch(0.905 0.008 255);
+  --input: oklch(0.88 0.01 255);
+  --ring: oklch(0.55 0.14 235);
+
+  --electricity: oklch(0.56 0.14 62);
+  --electricity-soft: oklch(0.95 0.06 85);
+  --gas: oklch(0.52 0.13 240);
+  --gas-soft: oklch(0.94 0.04 230);
+  --savings: oklch(0.5 0.13 155);
+  --warning: oklch(0.56 0.15 50);
+  --danger: oklch(0.53 0.2 27);
+  --destructive: var(--danger);
+
+  --shadow-card: 0 1px 2px oklch(0.2 0.02 260 / 6%), 0 8px 24px -12px oklch(0.2 0.02 260 / 18%);
+}
+
+.dark {
+  --background: oklch(0.155 0.014 260);
+  --foreground: oklch(0.965 0.005 255);
+  --card: oklch(0.198 0.016 260);
+  --card-foreground: oklch(0.965 0.005 255);
+  --popover: oklch(0.215 0.017 260);
+  --popover-foreground: oklch(0.965 0.005 255);
+  --primary: oklch(0.94 0.008 255);
+  --primary-foreground: oklch(0.18 0.015 260);
+  --secondary: oklch(0.255 0.017 260);
+  --secondary-foreground: oklch(0.965 0.005 255);
+  --muted: oklch(0.245 0.016 260);
+  --muted-foreground: oklch(0.72 0.018 258);
+  --accent: oklch(0.27 0.018 260);
+  --accent-foreground: oklch(0.965 0.005 255);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.74 0.12 230);
+
+  --electricity: oklch(0.83 0.16 82);
+  --electricity-soft: oklch(0.83 0.16 82 / 14%);
+  --gas: oklch(0.76 0.13 222);
+  --gas-soft: oklch(0.76 0.13 222 / 14%);
+  --savings: oklch(0.77 0.16 155);
+  --warning: oklch(0.8 0.15 65);
+  --danger: oklch(0.7 0.19 25);
+  --destructive: var(--danger);
+
+  --shadow-card: 0 1px 0 oklch(1 0 0 / 4%) inset, 0 12px 32px -16px oklch(0 0 0 / 60%);
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: calc(var(--radius) - 2px);
+  --radius-xl: var(--radius);
+  --radius-2xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+
+  --color-electricity: var(--electricity);
+  --color-electricity-soft: var(--electricity-soft);
+  --color-gas: var(--gas);
+  --color-gas-soft: var(--gas-soft);
+  --color-savings: var(--savings);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --shadow-card: var(--shadow-card);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/60;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply min-h-dvh bg-background font-sans text-foreground antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /* Sichtbarer Fokus für Tastatur (WCAG 2.4.7) */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

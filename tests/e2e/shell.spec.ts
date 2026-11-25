@@ -103,10 +103,10 @@ test('startet nach dem ersten Besuch offline – auch per Deep-Link', async ({ p
   await context.setOffline(false);
 });
 
-test('Shortcut „Gas ablesen“ öffnet die Gas-Erfassung', async ({ page }) => {
+test('Shortcut „Gas ablesen“ öffnet die Schnellerfassung', async ({ page }) => {
   await page.goto('./?ablesen=gas');
-  await expect(page.getByRole('heading', { level: 1, name: 'Gas ablesen' })).toBeVisible();
   await expect(page).toHaveURL(/\/Strom_Gas_Tracker\/#\/erfassen\/gas$/);
+  await expect(page.getByRole('dialog')).toBeVisible();
 });
 
 test('Theme-Wahl überlebt einen Neustart ohne Aufblitzen', async ({ page }) => {

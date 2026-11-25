@@ -12,16 +12,17 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - [x] `README.md`, `CLAUDE.md`, `docs/ROADMAP.md`, `docs/DOMAIN.md`, `docs/DECISIONS.md`
 - [ ] **Abnahme:** Seite lädt unter der Pages-URL, ist installierbar und startet offline → erst nach Merge auf `main` und aktiviertem Pages-Deploy prüfbar (lokal per E2E belegt)
 
-## Phase 1 – Zähler und Verbrauch (MVP)
+## Phase 1 – Zähler und Verbrauch (MVP) ✅
 
-- [ ] Dexie-Schema für alle Tabellen aus Abschnitt 5, Repositories, Migrations-Gerüst
-- [ ] Onboarding: Zähler anlegen (Strom/Gas, Einheit, Nachkommastellen, Startstand; Zählernummer und MaLo optional) oder „Demo-Daten laden“
-- [ ] Schnellerfassung mit Plausibilität und Live-Vorschau
-- [ ] Verlauf (anlegen, bearbeiten, löschen), Zählerwechsel
-- [ ] Domain: Parsing, Intervalle, Gas-Umrechnung, Tagesverteilung, Plausibilität
-- [ ] Übersicht (Verbrauchsteil) und Diagramme 1–3
-- [ ] Demo-Daten: 2 Jahre, Ablesungen alle 14–21 Tage, realistische Saisonalität, zwei Anbieterwechsel, erfundene Anbieter
-- [ ] **Abnahme:** Erfassung am Handy < 10 s; Testfälle G, I und Umrechnungsteil von B grün; Diagramme stimmen mit Demo-Daten
+- [x] Dexie-Schema für alle Tabellen aus Abschnitt 5, Repositories, Migrations-Gerüst
+- [x] Onboarding: Zähler anlegen (Strom/Gas, Einheit, Nachkommastellen, Startstand; Zählernummer und MaLo optional) oder „Demo-Daten laden“
+- [x] Schnellerfassung mit Plausibilität und Live-Vorschau
+- [x] Verlauf (anlegen, bearbeiten, löschen), Zählerwechsel
+- [x] Domain: Parsing, Intervalle, Gas-Umrechnung, Tagesverteilung, Plausibilität
+- [x] Übersicht (Verbrauchsteil) und Diagramme 1–3
+- [x] Demo-Daten: 2 Jahre, Ablesungen alle 14–21 Tage, realistische Saisonalität, zwei Anbieterwechsel, erfundene Anbieter
+- [x] Zusätzlich (aus Phase 4 vorgezogen): CSV-Import der Ablesungen (Excel-DE)
+- [x] **Abnahme:** Erfassung < 10 s (E2E), Testfälle G, I und Umrechnungsteil von B grün, Diagramme mit Demo-Daten geprüft
 
 ## Phase 2 – Verträge, Preise, Boni, Kosten
 
@@ -47,7 +48,7 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - [ ] Angebotsvergleich (6.8) mit Warnungen und Break-even
 - [ ] Wetter-Opt-in (Open-Meteo, Ortssuche), witterungsbereinigte Gas-Auswertung, Diagramm 8
 - [ ] Wechsel-Bilanz „Durch Wechseln gespart seit …“
-- [ ] Backup: JSON-Export/-Import (versioniert, zod, Fotos optional, Zusammenführen/Ersetzen); CSV-Export/-Import der Ablesungen (Excel-DE); Backup-Erinnerung alle 30 Tage; `navigator.storage.persist()`; Safari-Hinweis
+- [ ] Backup: JSON-Export/-Import (versioniert, zod, Fotos optional, Zusammenführen/Ersetzen); CSV-Export der Ablesungen (Excel-DE; Import ist seit Phase 1 da); Backup-Erinnerung alle 30 Tage; `navigator.storage.persist()`; Safari-Hinweis
 - [ ] Fotos clientseitig komprimieren (max. ~1600 px), Galerie je Ablesung
 - [ ] Jahresbericht als Druckansicht
 - [ ] **Abnahme:** Testfall J grün; Backup stellt auf einem zweiten Gerät alles wieder her
@@ -64,3 +65,6 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - Routen per `lazy()` aufteilen, sobald Diagramme/Formulare das Bundle vergrößern.
 - WebKit-Projekt in Playwright ergänzen (echtes Safari-Verhalten), sobald CI-Zeit es erlaubt.
 - Icons für die Manifest-Shortcuts (Blitz/Flamme einzeln).
+- Auswertung: Zeitraum „Vertrag“ (braucht Verträge aus Phase 2).
+- Zeitabhängige Gasfaktoren-Historie im Zählerformular (Phase 2: „Gasfaktoren am Zähler“).
+- Kosten „≈ … €“ in der Live-Vorschau der Schnellerfassung (braucht Preise aus Phase 2).

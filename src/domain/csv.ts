@@ -44,7 +44,7 @@ function parseEnergy(raw: string): EnergyType | null {
  * Kopfzeile erkannt, sonst Datum;Energie;Stand[;Notiz].
  */
 export function parseReadingsCsv(text: string): CsvParseResult {
-  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
   const rows: CsvReadingRow[] = [];
   const errors: CsvParseResult['errors'] = [];
   const firstIndex = lines.findIndex((l) => l.trim() !== '');

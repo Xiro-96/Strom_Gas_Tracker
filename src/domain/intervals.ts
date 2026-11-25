@@ -56,7 +56,7 @@ const KIND_ORDER: Record<ReadingKind, number> = {
   meter_install: 2,
 };
 
-export function sortReadings<T extends IntervalReading>(readings: readonly T[]): T[] {
+export function sortReadings<T extends { date: ISODate; kind: ReadingKind }>(readings: readonly T[]): T[] {
   return [...readings].sort(
     (a, b) => a.date.localeCompare(b.date) || KIND_ORDER[a.kind] - KIND_ORDER[b.kind],
   );

@@ -1,4 +1,4 @@
-import { addDays, daysBetween } from '@/domain/dates';
+import { addDays, daysBetween, daysInYear, eachDay, yearOf } from '@/domain/dates';
 import { dayWeight, type DailyPoint } from '@/domain/distribution';
 import type { Interval } from '@/domain/intervals';
 import type { EnergyType, ISODate } from '@/domain/types';
@@ -78,4 +78,24 @@ export function forecastAnnual(
       ? { range: [kwh * (1 - UNCERTAINTY), kwh * (1 + UNCERTAINTY)] as [number, number] }
       : {}),
   };
+}
+
+/**
+ * Prognostizierte Tageswerte für einen Zeitraum ohne Ablesungen (Restjahr, Spec 6.4):
+ * Gas: Jahresverbrauch × anteil(d) · Strom: Jahresverbrauch ÷ Tage im Jahr.
+ */
+export function projectedDaily(
+  annualKwh: number,
+  from: ISODate,
+  to: ISODate,
+  options: ForecastOptions,
+): DailyPoint[] {
+  return eachDay(from, to).map((date) => ({
+    date,
+    kwh:
+      options.energyType === 'gas'
+        ? annualKwh *
+          (options.weight ?? ((d: ISODate) => dayWeight(d, 'gas', options.baseLoadShare)))(date)
+        : annualKwh / daysInYear(yearOf(date)),
+  }));
 }

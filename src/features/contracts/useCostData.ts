@@ -13,6 +13,7 @@ import {
 import { delivers } from '@/domain/costs';
 import { todayISO } from '@/domain/dates';
 import { forecastAnnual, type AnnualForecast } from '@/domain/forecast';
+import { installmentTransactions } from '@/domain/installments';
 import type { Contract, EnergyType } from '@/domain/types';
 import { useEnergyData } from '@/features/shared/useEnergyData';
 
@@ -22,6 +23,8 @@ export interface EnergyCosts {
   /** Vertrag, der heute liefert – sonst der zuletzt begonnene. */
   current?: ContractBundle;
   currentForecast?: ContractForecast;
+  /** Prognose je Vertrag (Schlüssel: Vertrags-ID). */
+  forecasts: Partial<Record<string, ContractForecast>>;
   annual: AnnualForecast | null;
   monthly: MonthlyCost[];
   cumulative: CumulativePoint[];
@@ -39,7 +42,9 @@ export function toBundle(contract: Contract, data: ContractData): ContractBundle
     installmentPlan: contract.installmentPlan,
     periods: data.pricePeriods.filter((p) => p.contractId === contract.id),
     bonuses: data.bonuses.filter((b) => b.contractId === contract.id),
-    transactions: data.transactions.filter((t) => t.contractId === contract.id),
+    transactions: installmentTransactions(
+      data.transactions.filter((t) => t.contractId === contract.id),
+    ),
   };
 }
 
@@ -82,6 +87,7 @@ export function useCostData() {
         bundles,
         current,
         currentForecast: forecasts.find((f) => f.bundle.id === current?.id)?.forecast,
+        forecasts: Object.fromEntries(forecasts.map((f) => [f.bundle.id, f.forecast])),
         annual,
         monthly: monthlyCosts(daily, bundles),
         cumulative: current

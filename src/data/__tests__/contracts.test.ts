@@ -82,6 +82,15 @@ describe('Verträge', () => {
     );
   });
 
+  it('ersetzt beim Bearbeiten optionale Felder (z. B. Lieferende entfernen)', async () => {
+    const c = await createContract(bundle('2026-01-01', '2026-12-31'));
+    const { id: _id, createdAt: _c, updatedAt: _u, deliveryEnd: _end, ...rest } = c;
+    await updateContract(c.id, { ...rest, tariffName: 'Klar 24' }, { replace: true });
+    const [saved] = await listContracts();
+    expect(saved).toMatchObject({ id: c.id, createdAt: c.createdAt, tariffName: 'Klar 24' });
+    expect(saved?.deliveryEnd).toBeUndefined();
+  });
+
   it('löscht weich inklusive Preisen, Boni, Rechnungen und Transaktionen', async () => {
     const c = await createContract(bundle('2026-01-01'));
     await bills.add({

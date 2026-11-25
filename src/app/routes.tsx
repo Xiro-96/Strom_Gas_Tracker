@@ -28,6 +28,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'vertraege/:id',
+        lazy: async () => ({
+          Component: (await import('@/features/contracts/ContractDetailPage')).ContractDetailPage,
+        }),
+      },
+      {
         // Diagramme (Recharts) erst bei Bedarf laden – hält die Übersicht schlank.
         path: 'auswertung',
         lazy: async () => ({

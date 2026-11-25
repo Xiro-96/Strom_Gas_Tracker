@@ -1,4 +1,5 @@
 import {
+  upsertGasFactors,
   ctPerKwhToEurPerM3,
   DEFAULT_GAS_FACTORS,
   eurPerM3ToCtPerKwh,
@@ -37,5 +38,32 @@ describe('gasFactorsAt', () => {
   it('fällt ohne Faktoren auf die Platzhalter 0,9500 / 11,000 zurück', () => {
     expect(gasFactorsAt({}, '2026-01-01')).toEqual(DEFAULT_GAS_FACTORS);
     expect(DEFAULT_GAS_FACTORS).toEqual({ zFactor: 0.95, calorificValue: 11 });
+  });
+});
+
+describe('Gasfaktoren-Historie', () => {
+  const history = [
+    { validFrom: '2025-01-01', zFactor: 0.95, calorificValue: 11 },
+    { validFrom: '2026-01-01', zFactor: 0.94, calorificValue: 10.2 },
+  ];
+
+  it('fügt neue Werte mit „gültig ab“ sortiert ein', () => {
+    const next = upsertGasFactors(history, {
+      validFrom: '2025-07-01',
+      zFactor: 0.93,
+      calorificValue: 10.5,
+    });
+    expect(next.map((e) => e.validFrom)).toEqual(['2025-01-01', '2025-07-01', '2026-01-01']);
+    expect(gasFactorsAt({ gasFactors: next }, '2025-08-01').zFactor).toBe(0.93);
+  });
+
+  it('korrigiert Werte bei gleichem Datum, statt sie zu verdoppeln', () => {
+    const next = upsertGasFactors(history, {
+      validFrom: '2026-01-01',
+      zFactor: 0.9412,
+      calorificValue: 10.274,
+    });
+    expect(next).toHaveLength(2);
+    expect(next[1]).toEqual({ validFrom: '2026-01-01', zFactor: 0.9412, calorificValue: 10.274 });
   });
 });

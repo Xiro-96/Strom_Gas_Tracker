@@ -60,11 +60,25 @@ export async function createContract(bundle: NewContractBundle): Promise<Contrac
   });
 }
 
-export async function updateContract(id: string, patch: Partial<NewContract>): Promise<void> {
+/**
+ * Ändert einen Vertrag. Standard: Felder zusammenführen. `replace`: `patch` ist der vollständige
+ * neue Inhalt – fehlende optionale Felder (z. B. Lieferende) werden entfernt; id/Zeitstempel bleiben.
+ */
+export async function updateContract(
+  id: string,
+  patch: Partial<NewContract>,
+  { replace = false }: { replace?: boolean } = {},
+): Promise<void> {
   await db.transaction('rw', db.contracts, async () => {
     const current = await db.contracts.get(id);
     if (!current) throw new Error('Vertrag nicht gefunden.');
-    const next = { ...current, ...patch };
+    const base = {
+      id: current.id,
+      createdAt: current.createdAt,
+      updatedAt: current.updatedAt,
+      ...(current.isDemo ? { isDemo: true } : {}),
+    };
+    const next = (replace ? { ...base, ...patch } : { ...current, ...patch }) as Contract;
     await assertNoOverlap(next, id);
     await db.contracts.put({ ...next, updatedAt: nowISO() });
   });

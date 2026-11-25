@@ -1,6 +1,6 @@
 import { endOfMonth, getDaysInMonth } from 'date-fns';
 import { fromISODate, toISODate } from '@/domain/dates';
-import type { ISODate } from '@/domain/types';
+import type { ISODate, Transaction } from '@/domain/types';
 
 export interface InstallmentEntry {
   validFrom: ISODate;
@@ -73,4 +73,15 @@ export function recommendedInstallment(input: {
 }) {
   if (input.remaining <= 0) return NaN;
   return (input.costEur - input.offsetBonusEur - input.paidEur) / input.remaining;
+}
+
+/**
+ * Spec 6.5 – Abweichungen vom Abschlagsplan (ausgefallener oder zusätzlicher Abschlag) sind
+ * Transaktionen der Art `installment`/`other`. Bonus-Auszahlungen, Erstattungen und der
+ * Rechnungsausgleich gehören nicht zu den Abschlägen und zählen nicht zum Saldo.
+ */
+export function installmentTransactions<T extends { kind: Transaction['kind'] }>(
+  transactions: readonly T[],
+): T[] {
+  return transactions.filter((t) => t.kind === 'installment' || t.kind === 'other');
 }

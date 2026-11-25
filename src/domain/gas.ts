@@ -40,3 +40,13 @@ export function gasFactorsAt(meter: { gasFactors?: GasFactorEntry[] }, date: ISO
   const valid = entries.filter((e) => e.validFrom <= date).at(-1) ?? first;
   return { zFactor: valid.zFactor, calorificValue: valid.calorificValue };
 }
+
+/** Neue Faktoren „gültig ab“ einfügen; gleiches Datum = Korrektur des vorhandenen Eintrags. */
+export function upsertGasFactors(
+  history: readonly GasFactorEntry[],
+  entry: GasFactorEntry,
+): GasFactorEntry[] {
+  return [...history.filter((e) => e.validFrom !== entry.validFrom), entry].sort((a, b) =>
+    a.validFrom.localeCompare(b.validFrom),
+  );
+}

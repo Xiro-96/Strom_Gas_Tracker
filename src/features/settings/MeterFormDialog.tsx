@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Field } from '@/components/common/Field';
+import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -19,11 +20,11 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { createMeter, updateMeter } from '@/data/repositories/meters';
 import { addReading } from '@/data/repositories/readings';
 import { isISODate, todayISO } from '@/domain/dates';
-import { DEFAULT_GAS_FACTORS } from '@/domain/gas';
+import { DEFAULT_GAS_FACTORS, upsertGasFactors } from '@/domain/gas';
 import { parseMeterInput } from '@/domain/parse';
 import type { EnergyType, Meter } from '@/domain/types';
 import { ENERGY } from '@/features/shared/energy';
-import { meterInputValue } from '@/lib/format';
+import { formatDate, formatNumber, meterInputValue } from '@/lib/format';
 
 type Mode = 'create' | 'edit';
 
@@ -45,6 +46,11 @@ function makeSchema(mode: Mode) {
       startDate: z.string(),
       zFactor: z.string(),
       calorificValue: z.string(),
+      /** Bearbeiten: ab wann die eingegebenen Gasfaktoren gelten. */
+      factorsFrom: z.string(),
+      gasHistory: z.array(
+        z.object({ validFrom: z.string(), zFactor: z.number(), calorificValue: z.number() }),
+      ),
     })
     .superRefine((v, ctx) => {
       if (mode === 'create') {
@@ -60,6 +66,13 @@ function makeSchema(mode: Mode) {
         }
       }
       if (v.energyType === 'gas') {
+        if (mode === 'edit' && !isISODate(v.factorsFrom)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['factorsFrom'],
+            message: 'Bitte ein Datum wählen.',
+          });
+        }
         const z = parseDecimal(v.zFactor);
         if (!z.ok || z.value < 0.8 || z.value > 1.1) {
           ctx.addIssue({
@@ -83,7 +96,11 @@ function makeSchema(mode: Mode) {
 type FormValues = z.infer<ReturnType<typeof makeSchema>>;
 
 function defaults(meter: Meter | undefined, energyType: EnergyType): FormValues {
-  const factors = meter?.gasFactors?.at(-1) ?? DEFAULT_GAS_FACTORS;
+  const history = [...(meter?.gasFactors ?? [])].sort((a, b) =>
+    a.validFrom.localeCompare(b.validFrom),
+  );
+  const latest = history.at(-1);
+  const factors = latest ?? DEFAULT_GAS_FACTORS;
   const type = meter?.energyType ?? energyType;
   return {
     energyType: type,
@@ -98,6 +115,8 @@ function defaults(meter: Meter | undefined, energyType: EnergyType): FormValues 
     startDate: todayISO(),
     zFactor: meterInputValue(factors.zFactor, 4),
     calorificValue: meterInputValue(factors.calorificValue, 3),
+    factorsFrom: latest?.validFrom ?? meter?.activeFrom ?? todayISO(),
+    gasHistory: history,
   };
 }
 
@@ -123,6 +142,7 @@ export function MeterFormDialog({
   const { register, handleSubmit, control, setValue, reset, formState } = form;
   const energyType = useWatch({ control, name: 'energyType' });
   const errors = formState.errors;
+  const history = useFieldArray({ control, name: 'gasHistory' });
 
   useEffect(() => {
     if (open) reset(defaults(meter, defaultEnergy));
@@ -137,19 +157,15 @@ export function MeterFormDialog({
       meterNumber: v.meterNumber || undefined,
       maloId: v.maloId || undefined,
     };
+    const z = parseDecimal(v.zFactor);
+    const hs = parseDecimal(v.calorificValue);
     const gasFactors =
       v.energyType === 'gas'
-        ? [
-            {
-              validFrom: meter?.activeFrom ?? v.startDate,
-              zFactor: parseDecimal(v.zFactor).ok
-                ? Number(v.zFactor.replace(',', '.'))
-                : DEFAULT_GAS_FACTORS.zFactor,
-              calorificValue: parseDecimal(v.calorificValue).ok
-                ? Number(v.calorificValue.replace(',', '.'))
-                : DEFAULT_GAS_FACTORS.calorificValue,
-            },
-          ]
+        ? upsertGasFactors(mode === 'edit' ? v.gasHistory : [], {
+            validFrom: mode === 'edit' ? v.factorsFrom : v.startDate,
+            zFactor: z.ok ? z.value : DEFAULT_GAS_FACTORS.zFactor,
+            calorificValue: hs.ok ? hs.value : DEFAULT_GAS_FACTORS.calorificValue,
+          })
         : undefined;
     if (meter) {
       await updateMeter(meter.id, { ...fields, ...(gasFactors ? { gasFactors } : {}) });
@@ -284,10 +300,51 @@ export function MeterFormDialog({
               <Field label="Brennwert Hs (kWh/m³)" error={errors.calorificValue?.message}>
                 <Input inputMode="decimal" autoComplete="off" {...register('calorificValue')} />
               </Field>
+              {mode === 'edit' ? (
+                <Field
+                  label="Faktoren gültig ab"
+                  className="col-span-2"
+                  error={errors.factorsFrom?.message}
+                  hint="Gleiches Datum = Korrektur, neues Datum = neuer Abschnitt (z. B. neue Jahresrechnung)."
+                >
+                  <Input type="date" {...register('factorsFrom')} />
+                </Field>
+              ) : null}
               <p className="col-span-2 -mt-1 text-xs text-muted-foreground">
                 Werte aus deiner Gasrechnung übernehmen – sie hängen vom Netz ab, nicht vom
                 Anbieter.
               </p>
+              {mode === 'edit' && history.fields.length > 0 ? (
+                <div className="col-span-2 flex flex-col gap-1">
+                  <p className="text-xs font-medium">Bisherige Gasfaktoren</p>
+                  <ul className="flex flex-col divide-y rounded-xl border text-sm">
+                    {history.fields.map((entry, index) => (
+                      <li
+                        key={entry.id}
+                        className="flex items-center justify-between gap-2 px-3 py-1.5"
+                      >
+                        <span>
+                          ab {formatDate(entry.validFrom)}: z {formatNumber(entry.zFactor, 4, 4)} ·
+                          Hs {formatNumber(entry.calorificValue, 3, 3)}
+                        </span>
+                        {history.fields.length > 1 ? (
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            aria-label={`Gasfaktoren ab ${formatDate(entry.validFrom)} entfernen`}
+                            onClick={() => {
+                              history.remove(index);
+                            }}
+                          >
+                            <Trash2 aria-hidden="true" />
+                          </Button>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
           ) : null}
 

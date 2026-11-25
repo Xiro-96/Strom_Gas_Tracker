@@ -1,4 +1,5 @@
 import {
+  installmentTransactions,
   balance,
   installmentDueDates,
   paidUntil,
@@ -67,5 +68,18 @@ describe('Abschlagsplan', () => {
     expect(
       recommendedInstallment({ costEur: 100, offsetBonusEur: 0, paidEur: 0, remaining: 0 }),
     ).toBeNaN();
+  });
+});
+
+describe('Transaktionen im Abschlags-Check', () => {
+  it('zählt nur Abweichungen der Abschläge, keine Bonus-Auszahlungen oder Erstattungen', () => {
+    const tx = [
+      { date: '2026-03-15', amountEur: -100, kind: 'installment' as const },
+      { date: '2026-04-15', amountEur: 20, kind: 'other' as const },
+      { date: '2026-04-20', amountEur: -160, kind: 'bonus_payout' as const },
+      { date: '2027-02-01', amountEur: -80, kind: 'refund' as const },
+      { date: '2027-02-01', amountEur: 30, kind: 'bill_balance' as const },
+    ];
+    expect(installmentTransactions(tx).map((t) => t.amountEur)).toEqual([-100, 20]);
   });
 });

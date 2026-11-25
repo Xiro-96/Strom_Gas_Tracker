@@ -45,3 +45,9 @@ Format: Datum · Entscheidung · Grund.
 14. **Deploy-Workflow:** ein Workflow `ci.yml`. Job `verify` (Lint, Typecheck, Test, Build, E2E)
     läuft bei jedem Push/PR; Job `deploy` nur auf `main` (GitHub Pages über
     `actions/deploy-pages`).
+15. **Bibliotheken für Daten, Formulare und Diagramme** (Dexie, dexie-react-hooks, zod,
+    react-hook-form, date-fns, Recharts, fake-indexeddb) kommen mit ihrer ersten Nutzung in
+    Phase 1/2 dazu, nicht schon in Phase 0 („nichts aus späteren Phasen vorziehen“, keine
+    ungenutzten Abhängigkeiten).
+16. **Messwerte Phase 0** (Lighthouse 12, mobil, lokaler Preview-Build): Performance 94,
+    Accessibility 100, Best Practices 100, SEO 100. JS-Bundle ca. 137 KB gzip, Precache 15 Dateien.

@@ -1,11 +1,15 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { db } from '@/data/db';
+import { createMeter } from '@/data/repositories/meters';
 import { renderRoute } from '@/test/renderRoute';
 
 describe('App-Shell', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
     document.documentElement.className = 'dark';
+    await db.delete();
+    await db.open();
   });
 
   it('zeigt die Bottom-Navigation in der Reihenfolge der Spezifikation', async () => {
@@ -53,10 +57,15 @@ describe('App-Shell', () => {
   });
 
   it('öffnet die Erfassung für Gas über die Shortcut-Route', async () => {
+    await createMeter({
+      energyType: 'gas',
+      name: 'Gas',
+      unit: 'm3',
+      decimals: 3,
+      activeFrom: '2026-01-01',
+    });
     renderRoute('/erfassen/gas');
-    expect(
-      await screen.findByRole('heading', { level: 1, name: 'Gas ablesen' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Gas ablesen' })).toBeInTheDocument();
   });
 
   it('zeigt bei unbekannter Route „Seite nicht gefunden“ mit Weg zurück', async () => {

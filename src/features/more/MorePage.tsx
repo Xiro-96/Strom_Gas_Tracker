@@ -3,7 +3,10 @@ import { Link } from 'react-router';
 import { SECONDARY_NAV_ITEMS } from '@/app/navigation';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DataSection } from '@/features/settings/DataSection';
 import { InstallGuide } from '@/features/settings/InstallGuide';
+import { MetersSection } from '@/features/settings/MetersSection';
+import { PreferencesSection } from '@/features/settings/PreferencesSection';
 import { ThemeSetting } from '@/features/settings/ThemeSetting';
 
 export function MorePage() {
@@ -29,6 +32,10 @@ export function MorePage() {
           </ul>
         </nav>
       </Card>
+
+      <MetersSection />
+      <DataSection />
+      <PreferencesSection />
 
       <Card>
         <CardHeader>
@@ -70,7 +77,8 @@ export function MorePage() {
           </p>
           <p>
             Einzige mögliche Verbindung nach außen: Wetterdaten von Open-Meteo – und auch nur, wenn
-            du das später ausdrücklich einschaltest.
+            du das später ausdrücklich einschaltest. Lege die App auf den Home-Bildschirm: Safari
+            kann Website-Daten sonst nach längerer Nichtnutzung löschen.
           </p>
         </CardContent>
       </Card>

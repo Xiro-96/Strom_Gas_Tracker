@@ -1,30 +1,35 @@
-import { Flame, Gauge, Zap } from 'lucide-react';
-import { useParams } from 'react-router';
-import { ComingSoon } from '@/components/common/ComingSoon';
-import { PageHeader } from '@/components/common/PageHeader';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
+import { CaptureSheet } from '@/features/capture/CaptureSheet';
+import { OverviewPage } from '@/features/overview/OverviewPage';
+import { MeterFormDialog } from '@/features/settings/MeterFormDialog';
+import { energyFromSlug } from '@/features/shared/energy';
 
-const TITLES = {
-  strom: { title: 'Strom ablesen', icon: Zap },
-  gas: { title: 'Gas ablesen', icon: Flame },
-} as const;
-
-function isKnownEnergy(value: string | undefined): value is keyof typeof TITLES {
-  return value === 'strom' || value === 'gas';
-}
-
+/** /erfassen[/strom|gas]: Übersicht im Hintergrund, Schnellerfassung als Sheet darüber. */
 export function CapturePage() {
   const { energy } = useParams();
-  const { title, icon } = isKnownEnergy(energy)
-    ? TITLES[energy]
-    : { title: 'Zählerstand erfassen', icon: Gauge };
+  const navigate = useNavigate();
+  const [meterOpen, setMeterOpen] = useState(false);
+  const initialEnergy = energyFromSlug(energy);
   return (
     <>
-      <PageHeader title={title} description="Zähler wählen, Wert tippen, speichern." />
-      <ComingSoon
-        icon={icon}
-        phase={1}
-        title="Schnellerfassung in Vorbereitung"
-        description="Bald erfasst du hier einen Zählerstand in unter 10 Sekunden – mit Plausibilitätsprüfung, Live-Vorschau und Foto."
+      <OverviewPage />
+      <CaptureSheet
+        open={!meterOpen}
+        initialEnergy={initialEnergy}
+        onOpenChange={(open) => {
+          if (!open) void navigate('/', { replace: true });
+        }}
+        onCreateMeter={() => {
+          setMeterOpen(true);
+        }}
+      />
+      <MeterFormDialog
+        open={meterOpen}
+        defaultEnergy={initialEnergy}
+        onOpenChange={(open) => {
+          setMeterOpen(open);
+        }}
       />
     </>
   );

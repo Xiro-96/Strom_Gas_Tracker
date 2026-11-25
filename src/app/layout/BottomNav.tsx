@@ -15,7 +15,7 @@ export function BottomNav() {
               <NavLink
                 to={to}
                 aria-label={ariaLabel ?? label}
-                className="-mt-7 grid size-15 place-items-center rounded-full bg-linear-to-br from-electricity to-gas text-[#0b0f17] shadow-lg ring-4 shadow-black/30 ring-background transition-transform active:scale-95"
+                className="-mt-7 grid size-15 place-items-center rounded-full bg-linear-to-br from-amber-300 to-cyan-400 text-slate-950 shadow-lg ring-4 shadow-black/30 ring-background transition-transform active:scale-95"
               >
                 <Icon aria-hidden="true" className="size-7" strokeWidth={2.5} />
               </NavLink>

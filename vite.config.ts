@@ -35,7 +35,9 @@ export default defineConfig({
       pwaAssets: { config: true, overrideManifestIcons: true, injectThemeColor: false },
       manifest: createManifest(BASE),
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}'],
+        // Kein `webmanifest` hier: das Plugin fügt das Manifest selbst hinzu. Doppelte URLs mit
+        // abweichender Revision lassen Workbox das Precaching still abbrechen (E2E-Test prüft das).
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         // Nur lateinische Schrift-Subsets offline vorhalten (Deutsch braucht nichts anderes).
         globIgnores: ['**/inter-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2'],
         cleanupOutdatedCaches: true,

@@ -15,6 +15,7 @@ import { KIND_LABEL } from '@/features/history/kinds';
 import { ReadingDialog } from '@/features/history/ReadingDialog';
 import { MeterChangeDialog } from '@/features/history/MeterChangeDialog';
 import { PhotoDialog } from '@/features/history/PhotoDialog';
+import { PhotoGallery } from '@/features/history/PhotoGallery';
 import { ENERGY } from '@/features/shared/energy';
 import { useEnergyData } from '@/features/shared/useEnergyData';
 import { formatDate, formatMeterValue, formatNumber, formatPerDay, UNIT_LABEL } from '@/lib/format';
@@ -192,6 +193,8 @@ export function HistoryPage() {
           })}
         </ul>
       </Card>
+
+      <PhotoGallery readings={analysis.readings} meters={meterById} onOpen={setPhoto} />
 
       {current ? (
         <Button

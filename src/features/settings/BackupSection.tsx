@@ -150,7 +150,11 @@ export function BackupSection() {
             onClick={() => {
               void exportReadingsCsv().then((csv) => {
                 // BOM, damit Excel Umlaute richtig anzeigt
-                downloadFile(`\uFEFF${csv}`, `ablesungen-${todayISO()}.csv`, 'text/csv;charset=utf-8');
+                downloadFile(
+                  `\uFEFF${csv}`,
+                  `ablesungen-${todayISO()}.csv`,
+                  'text/csv;charset=utf-8',
+                );
               });
             }}
           >

@@ -1,5 +1,6 @@
 import {
   ChartNoAxesCombined,
+  FileChartColumn,
   FileText,
   History,
   LayoutDashboard,
@@ -40,4 +41,5 @@ export const SECONDARY_NAV_ITEMS: readonly NavItem[] = [
   { to: '/auswertung', label: 'Auswertung', icon: ChartNoAxesCombined },
   { to: '/wechsel', label: 'Wechsel-Cockpit', icon: Repeat },
   { to: '/angebote', label: 'Angebote', icon: Tags },
+  { to: '/bericht', label: 'Jahresbericht', icon: FileChartColumn },
 ];

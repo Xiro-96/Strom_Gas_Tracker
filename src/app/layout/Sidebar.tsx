@@ -29,7 +29,7 @@ export function Sidebar() {
   const main = NAV_ITEMS.filter((item) => !item.primary && item.to !== '/mehr');
   const more = NAV_ITEMS.find((item) => item.to === '/mehr');
   return (
-    <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r px-4 py-6 md:flex">
+    <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r px-4 py-6 md:flex print:hidden">
       <Link to="/" className="flex items-center gap-3 px-2">
         <AppLogo className="size-9" />
         <span className="leading-tight">

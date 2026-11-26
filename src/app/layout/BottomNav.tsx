@@ -6,7 +6,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Hauptnavigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/85 pb-safe backdrop-blur-xl md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/85 pb-safe backdrop-blur-xl md:hidden print:hidden"
     >
       <ul className="mx-auto grid h-16 max-w-md grid-cols-5 items-center px-2">
         {NAV_ITEMS.map(({ to, label, icon: Icon, primary, ariaLabel }) => (

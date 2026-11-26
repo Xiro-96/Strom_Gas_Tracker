@@ -11,6 +11,7 @@ import { Onboarding } from '@/features/onboarding/Onboarding';
 import { EnergyCard } from '@/features/overview/EnergyCard';
 import { BackupReminder } from '@/features/overview/BackupReminder';
 import { DeadlineBar } from '@/features/overview/DeadlineBar';
+import { SavingsCard } from '@/features/overview/SavingsCard';
 import { useDeadlines } from '@/features/switch/useDeadlines';
 import { formatDateLong } from '@/lib/format';
 
@@ -68,6 +69,14 @@ export function OverviewPage() {
               ) : null;
             })}
           </div>
+          {cost.status === 'ready' ? (
+            <SavingsCard
+              byEnergy={cost.byEnergy}
+              labels={Object.fromEntries(
+                cost.energy.settings.referenceTariffs.map((r) => [r.energyType, r.label]),
+              )}
+            />
+          ) : null}
           <Link
             to="/auswertung"
             className="flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium hover:bg-accent/50"

@@ -15,6 +15,7 @@ import { annualCostEur, delivers, pricePeriodAt } from '@/domain/costs';
 import { todayISO } from '@/domain/dates';
 import { forecastAnnual, type AnnualForecast } from '@/domain/forecast';
 import { installmentTransactions } from '@/domain/installments';
+import { switchSavings, type SwitchSavings } from '@/domain/savings';
 import type { Contract, EnergyType } from '@/domain/types';
 import { useEnergyData } from '@/features/shared/useEnergyData';
 
@@ -32,6 +33,8 @@ export interface EnergyCosts {
   /** Vertrag, der heute liefert (für Kosten und Abschlags-Check in der Übersicht). */
   active?: ContractBundle;
   monthToDate: ReturnType<typeof monthToDateCost>;
+  /** Wechsel-Bilanz ggü. Referenztarif (nur mit Referenztarif) */
+  savings: SwitchSavings | null;
   monthly: MonthlyCost[];
   cumulative: CumulativePoint[];
   effective: EffectivePriceEntry[];
@@ -107,6 +110,12 @@ export function useCostData() {
           baseLoadShare: energy.settings.gasBaseLoadShare,
           today,
         }),
+        savings: (() => {
+          const reference = energy.settings.referenceTariffs.find(
+            (r) => r.energyType === energyType,
+          );
+          return reference ? switchSavings({ bundles, daily, reference }) : null;
+        })(),
         monthly: monthlyCosts(daily, bundles),
         cumulative: current
           ? cumulativeCostSeries({

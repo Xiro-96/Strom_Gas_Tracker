@@ -182,3 +182,22 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Jahresbericht „Als PDF sichern“: hell, ohne Navigation, Toasts und Schatten */
+@media print {
+  :root,
+  .dark {
+    color-scheme: light;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+  [data-slot='card'] {
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+}

@@ -280,7 +280,7 @@ describe('Übersicht – Kosten', () => {
     const meter = await stromzaehler();
     await vertrag(meter.id);
     renderRoute('/');
-    const link = await screen.findByRole('link', { name: 'Kosten und Abschlag Blitzwerk' });
+    const link = await screen.findByRole('link', { name: /^Vertrag Blitzwerk:/ });
     expect(link).toHaveTextContent('Kosten diesen Monat');
     expect(link).toHaveTextContent(/Guthaben|Nachzahlung|Ausgeglichen/);
     expect(screen.getByText(/Jahresprognose/).parentElement).toHaveTextContent(/≈ [\d.]+,\d\d €/);

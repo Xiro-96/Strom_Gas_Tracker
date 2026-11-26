@@ -176,9 +176,9 @@ function CostRow({ costs }: { costs: EnergyCosts | undefined }) {
   return (
     <Link
       to={`/vertraege/${active.id}`}
-      aria-label={`Kosten und Abschlag ${active.provider}`}
       className="-mx-2 grid grid-cols-2 gap-3 rounded-xl border-t px-2 pt-3 text-sm transition-colors hover:bg-accent/40"
     >
+      <span className="sr-only">Vertrag {active.provider}: </span>
       <span className="flex flex-col">
         <span className="text-xs text-muted-foreground">Kosten diesen Monat</span>
         <span className="font-semibold tabular-nums">

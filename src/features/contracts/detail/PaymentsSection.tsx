@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 import { bills as billRepo, transactions as txRepo } from '@/data/repositories/contracts';
-import { isISODate } from '@/domain/dates';
+import { isISODate, todayISO } from '@/domain/dates';
 import type { Bill, Contract, ISODate, Transaction } from '@/domain/types';
 import { Section } from '@/features/contracts/detail/Section';
 import { BILL_KIND_LABEL, parseDecimal, TRANSACTION_KIND_LABEL } from '@/features/contracts/labels';
@@ -214,6 +214,24 @@ export function BillsSection({ contract, bills }: { contract: Contract; bills: B
                     .filter(Boolean)
                     .join(' · ')}
                 </span>
+                {bill.balanceEur !== undefined && bill.balanceEur < 0 ? (
+                  bill.balanceSettledAt ? (
+                    <span className="text-xs text-savings">
+                      Guthaben erhalten am {formatDate(bill.balanceSettledAt)}
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-1 self-start"
+                      onClick={() => {
+                        void billRepo.update(bill.id, { balanceSettledAt: todayISO() });
+                      }}
+                    >
+                      Guthaben erhalten
+                    </Button>
+                  )
+                ) : null}
               </div>
               <Button
                 size="icon"

@@ -9,7 +9,7 @@ import {
 import { hasDemoData } from '@/data/repositories/demo';
 import { listOffers } from '@/data/repositories/offers';
 import { listMeters } from '@/data/repositories/meters';
-import { listReadings } from '@/data/repositories/readings';
+import { firstOwnDataAt, listReadings } from '@/data/repositories/readings';
 import { getSettings } from '@/data/repositories/settings';
 import type {
   Bill,
@@ -64,4 +64,15 @@ export function useContractData(): ContractData | undefined {
 
 export function useOffers(): Offer[] | undefined {
   return useLiveQuery(listOffers, []);
+}
+
+/** Für die Backup-Erinnerung: erste eigene Daten und letzte Sicherung. */
+export function useBackupStatus(): { firstDataAt?: string; lastBackupAt?: string } | undefined {
+  return useLiveQuery(async () => {
+    const [firstDataAt, settings] = await Promise.all([firstOwnDataAt(), getSettings()]);
+    return {
+      ...(firstDataAt ? { firstDataAt } : {}),
+      ...(settings.lastBackupAt ? { lastBackupAt: settings.lastBackupAt } : {}),
+    };
+  }, []);
 }

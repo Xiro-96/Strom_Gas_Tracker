@@ -1,6 +1,7 @@
 import type { Deadline } from '@/domain/deadlines';
 import { buildIcs } from '@/domain/ics';
 import type { ISODate } from '@/domain/types';
+import { downloadFile } from '@/lib/download';
 
 export const CALENDAR_FILE_NAME = 'strom-gas-fristen.ics';
 
@@ -25,14 +26,5 @@ export function calendarText(
 
 /** Startet den Download (iOS/Android öffnen die .ics im Kalender-Import). */
 export function downloadCalendar(text: string): void {
-  const url = URL.createObjectURL(new Blob([text], { type: 'text/calendar;charset=utf-8' }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = CALENDAR_FILE_NAME;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-  }, 1000);
+  downloadFile(text, CALENDAR_FILE_NAME, 'text/calendar;charset=utf-8');
 }

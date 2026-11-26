@@ -9,6 +9,7 @@ import { removeDemoData } from '@/data/repositories/demo';
 import { todayISO } from '@/domain/dates';
 import { Onboarding } from '@/features/onboarding/Onboarding';
 import { EnergyCard } from '@/features/overview/EnergyCard';
+import { BackupReminder } from '@/features/overview/BackupReminder';
 import { DeadlineBar } from '@/features/overview/DeadlineBar';
 import { useDeadlines } from '@/features/switch/useDeadlines';
 import { formatDateLong } from '@/lib/format';
@@ -52,6 +53,7 @@ export function OverviewPage() {
           {fristen.status === 'ready' ? (
             <DeadlineBar deadlines={fristen.deadlines} today={fristen.today} />
           ) : null}
+          <BackupReminder />
           <div className="grid gap-4 sm:grid-cols-2">
             {data.energies.map((energy) => {
               const analysis = data.analyses[energy];

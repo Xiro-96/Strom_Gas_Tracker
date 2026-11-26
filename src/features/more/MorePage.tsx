@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { SECONDARY_NAV_ITEMS } from '@/app/navigation';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BackupSection } from '@/features/settings/BackupSection';
 import { CalendarSection } from '@/features/settings/CalendarSection';
 import { DataSection } from '@/features/settings/DataSection';
 import { InstallGuide } from '@/features/settings/InstallGuide';
@@ -36,6 +37,7 @@ export function MorePage() {
       </Card>
 
       <MetersSection />
+      <BackupSection />
       <DataSection />
       <CalendarSection />
       <PreferencesSection />

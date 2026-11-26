@@ -303,7 +303,7 @@ describe('Anbieter-Zeitstrahl (Diagramm 6)', () => {
     await vertrag(meter.id);
     renderRoute('/vertraege');
     expect(await screen.findByRole('heading', { name: 'Anbieter-Zeitstrahl' })).toBeInTheDocument();
-    const band = screen.getByRole('button', { name: /^Strom: Blitzwerk, .* – läuft$/ });
+    const band = screen.getByRole('button', { name: /^Strom: Blitzwerk, .* – läuft/ });
     await user.click(band);
     expect(band).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByText(/30,00 ct\/kWh zu Beginn/)).toBeInTheDocument();

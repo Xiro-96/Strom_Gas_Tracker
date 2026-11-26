@@ -104,7 +104,7 @@ export function ProviderTimeline({ data, today }: { data: ContractData; today: I
         <svg
           width={width}
           height={height}
-          role="img"
+          role="group"
           aria-label="Anbieter-Zeitstrahl"
           className="block overflow-visible"
         >
@@ -155,7 +155,7 @@ export function ProviderTimeline({ data, today }: { data: ContractData; today: I
                       role="button"
                       tabIndex={0}
                       aria-pressed={isSelected}
-                      aria-label={`${ENERGY[row.energyType].label}: ${b.provider}, ${period(b)}`}
+                      aria-label={`${ENERGY[row.energyType].label}: ${b.provider}, ${period(b)}${label ? `, ${label}` : ''}`}
                       className="cursor-pointer outline-none [&:focus-visible>rect]:stroke-ring"
                       onClick={() => {
                         setSelected(isSelected ? null : b.contractId);

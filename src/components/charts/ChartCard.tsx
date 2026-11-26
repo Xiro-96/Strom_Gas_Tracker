@@ -13,7 +13,7 @@ import {
 export interface LegendItem {
   label: string;
   color: string;
-  variant?: 'solid' | 'dashed' | 'ghost';
+  variant?: 'solid' | 'dashed' | 'ghost' | 'swatch';
 }
 
 interface ChartCardProps {
@@ -58,7 +58,7 @@ export function ChartCard({ title, description, legend, table, children }: Chart
             {legend.map((item) => (
               <li key={item.label} className="flex items-center gap-1.5">
                 <svg width="18" height="8" aria-hidden="true">
-                  {item.variant === 'ghost' ? (
+                  {item.variant === 'ghost' || item.variant === 'swatch' ? (
                     <rect
                       x="0"
                       y="0"
@@ -66,7 +66,7 @@ export function ChartCard({ title, description, legend, table, children }: Chart
                       height="8"
                       rx="2"
                       fill={item.color}
-                      opacity={0.3}
+                      opacity={item.variant === 'ghost' ? 0.3 : 1}
                     />
                   ) : (
                     <line

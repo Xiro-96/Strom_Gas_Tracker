@@ -10,6 +10,7 @@ import { contractStatus } from '@/domain/contractStatus';
 import type { Bill, Contract } from '@/domain/types';
 import { ContractWizard } from '@/features/contracts/ContractWizard';
 import { CONTRACT_STATUS, currentMeters, deliveryLabel } from '@/features/contracts/labels';
+import { ProviderTimeline } from '@/features/contracts/ProviderTimeline';
 import { useCostData, type EnergyCosts } from '@/features/contracts/useCostData';
 import { ENERGY, ENERGY_TYPES } from '@/features/shared/energy';
 import { describeBalance, formatCt } from '@/lib/format';
@@ -71,39 +72,42 @@ export function ContractsPage() {
           action={openWizard}
         />
       ) : (
-        ENERGY_TYPES.map((energy) => {
-          const list = contracts
-            .filter((c) => c.energyType === energy)
-            .sort((a, b) => b.deliveryStart.localeCompare(a.deliveryStart));
-          if (list.length === 0) return null;
-          const Icon = ENERGY[energy].icon;
-          return (
-            <section
-              key={energy}
-              className="flex flex-col gap-3"
-              aria-labelledby={`vertraege-${energy}`}
-            >
-              <h2
-                id={`vertraege-${energy}`}
-                className="flex items-center gap-2 text-base font-semibold"
+        <>
+          <ProviderTimeline data={cost.contracts} today={cost.today} />
+          {ENERGY_TYPES.map((energy) => {
+            const list = contracts
+              .filter((c) => c.energyType === energy)
+              .sort((a, b) => b.deliveryStart.localeCompare(a.deliveryStart));
+            if (list.length === 0) return null;
+            const Icon = ENERGY[energy].icon;
+            return (
+              <section
+                key={energy}
+                className="flex flex-col gap-3"
+                aria-labelledby={`vertraege-${energy}`}
               >
-                <Icon aria-hidden="true" className={`size-4 ${ENERGY[energy].text}`} />
-                {ENERGY[energy].label}
-              </h2>
-              {list.map((contract) => (
-                <ContractLink
-                  key={contract.id}
-                  contract={contract}
-                  costs={cost.byEnergy[energy]}
-                  finalBill={cost.contracts.bills
-                    .filter((b) => b.contractId === contract.id && b.balanceEur !== undefined)
-                    .at(-1)}
-                  today={cost.today}
-                />
-              ))}
-            </section>
-          );
-        })
+                <h2
+                  id={`vertraege-${energy}`}
+                  className="flex items-center gap-2 text-base font-semibold"
+                >
+                  <Icon aria-hidden="true" className={`size-4 ${ENERGY[energy].text}`} />
+                  {ENERGY[energy].label}
+                </h2>
+                {list.map((contract) => (
+                  <ContractLink
+                    key={contract.id}
+                    contract={contract}
+                    costs={cost.byEnergy[energy]}
+                    finalBill={cost.contracts.bills
+                      .filter((b) => b.contractId === contract.id && b.balanceEur !== undefined)
+                      .at(-1)}
+                    today={cost.today}
+                  />
+                ))}
+              </section>
+            );
+          })}
+        </>
       )}
       <ContractWizard open={wizardOpen} onOpenChange={setWizardOpen} meters={meters} />
     </>

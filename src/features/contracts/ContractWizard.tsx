@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Controller, useFieldArray, useForm, useWatch, type FieldPath } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import { Field } from '@/components/common/Field';
 import { Button } from '@/components/ui/button';
 import {
@@ -71,6 +71,8 @@ const schema = z.object({
   installmentDay: z.string(),
 });
 type Values = z.infer<typeof schema>;
+/** Vorbelegung, z. B. aus einem Angebot (Werte wie eingegeben, Dezimalkomma). */
+export type WizardInitial = Partial<Omit<Values, 'bonuses'>> & { bonuses?: Values['bonuses'] };
 
 const STEPS: { title: string; fields: FieldPath<Values>[] }[] = [
   {
@@ -99,6 +101,7 @@ interface ContractWizardProps {
   /** Zähler je Energieart (aktueller Zähler); bestimmt Auswahl und Gasfaktoren. */
   meters: Partial<Record<EnergyType, Meter>>;
   defaultEnergy?: EnergyType;
+  initial?: WizardInitial;
 }
 
 /** Vertrags-Assistent (Spec 7.3): Anbieter & Tarif → Preise → Boni → Laufzeit, Fristen, Abschlag. */
@@ -110,7 +113,7 @@ export function ContractWizard(props: ContractWizardProps) {
   );
 }
 
-function WizardForm({ onOpenChange, meters, defaultEnergy }: ContractWizardProps) {
+function WizardForm({ onOpenChange, meters, defaultEnergy, initial }: ContractWizardProps) {
   const navigate = useNavigate();
   const energies = (['electricity', 'gas'] as const).filter((e) => meters[e]);
   const [step, setStep] = useState(0);
@@ -140,6 +143,7 @@ function WizardForm({ onOpenChange, meters, defaultEnergy }: ContractWizardProps
       deliveryEnd: '',
       installmentAmount: '',
       installmentDay: '15',
+      ...initial,
     },
   });
   const { register, control, handleSubmit, trigger, formState } = form;

@@ -9,11 +9,15 @@ import { removeDemoData } from '@/data/repositories/demo';
 import { todayISO } from '@/domain/dates';
 import { Onboarding } from '@/features/onboarding/Onboarding';
 import { EnergyCard } from '@/features/overview/EnergyCard';
-import { useCostData } from '@/features/contracts/useCostData';
+import { BackupReminder } from '@/features/overview/BackupReminder';
+import { DeadlineBar } from '@/features/overview/DeadlineBar';
+import { SavingsCard } from '@/features/overview/SavingsCard';
+import { useDeadlines } from '@/features/switch/useDeadlines';
 import { formatDateLong } from '@/lib/format';
 
 export function OverviewPage() {
-  const cost = useCostData();
+  const fristen = useDeadlines();
+  const cost = fristen.status === 'ready' ? fristen.cost : fristen;
   const data = cost.status === 'ready' ? cost.energy : cost;
   const hasDemo = useHasDemoData();
 
@@ -47,6 +51,10 @@ export function OverviewPage() {
               </Button>
             </div>
           ) : null}
+          {fristen.status === 'ready' ? (
+            <DeadlineBar deadlines={fristen.deadlines} today={fristen.today} />
+          ) : null}
+          <BackupReminder />
           <div className="grid gap-4 sm:grid-cols-2">
             {data.energies.map((energy) => {
               const analysis = data.analyses[energy];
@@ -61,6 +69,14 @@ export function OverviewPage() {
               ) : null;
             })}
           </div>
+          {cost.status === 'ready' ? (
+            <SavingsCard
+              byEnergy={cost.byEnergy}
+              labels={Object.fromEntries(
+                cost.energy.settings.referenceTariffs.map((r) => [r.energyType, r.label]),
+              )}
+            />
+          ) : null}
           <Link
             to="/auswertung"
             className="flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium hover:bg-accent/50"

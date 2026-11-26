@@ -123,3 +123,75 @@ Format: Datum · Entscheidung · Grund.
 41. **Messwerte Phase 2** (Lighthouse 12, mobil, lokaler Preview-Build, 3 Läufe): Performance 91–92,
     Accessibility 100, Best Practices 100. Start-JS 203 KB gzip (Phase 1: 197 KB; +5 KB für die
     Kosten in der Übersicht). Verträge, Detailseite und Diagramme werden lazy geladen.
+
+## Phase 3 – Wechsel-Cockpit und Erinnerungen (26.11.2026)
+
+42. **Kündigungsfrist nur für feste Enden:** Erstlaufzeit, feste Verlängerung oder ein geplantes
+    Lieferende. Nach der Erstlaufzeit mit monatlicher Verlängerung gibt es keine „wandernde“ Frist
+    (sie läge jeden Tag auf heute); das Cockpit zeigt dann „frühestmögliches Lieferende bei
+    Kündigung heute“. Ist die Kündigung gesendet, entfällt die Frist.
+43. **Zustände einer Frist:** erledigt, überfällig, verstrichen, bald (≤ 14 Tage), geplant.
+    Kündigung, Sonderkündigung, Preisgarantie-Ende und Wechseltag-Ablesung **verstreichen** nach
+    ihrem Datum (nachholen geht nicht); Bonus-Prüfung, Schlussrechnung, Guthaben und Ablesung
+    werden **überfällig** (Spec 4.6: Überschreitungen markieren).
+44. **Wechseltag** = Lieferende + 1 Tag; eine Ablesung ±1 Tag gilt als Wechseltag-Ablesung.
+    Neukundenbonus prüfen = Rechnungsdatum der Schlussrechnung, sonst Lieferende + 6 Wochen.
+45. **Fristen-Leiste** zeigt die dringendste offene Frist (überfällig zuerst, dann nach Datum),
+    ohne „nächste Ablesung“ – die zeigen die Energiekarten. **Hinweise beim Start**: Fristen
+    überfällig oder in ≤ 7 Tagen als ein Toast, höchstens einmal pro Tag (`localStorage`
+    `sgt-hints-shown`, Gerätekomfort). Die Hinweise lesen die Daten einmalig, nicht live.
+46. **Checkliste:** Schritte, die sich aus den Daten ergeben (Kündigung, Bestätigung, Nachfolger
+    mit Lieferbeginn = Wechseltag, Wechseltag-Ablesung, Schlussrechnung, Boni erledigt,
+    Guthaben), werden automatisch abgehakt; die übrigen speichert `Contract.switchChecklist`
+    (optionales Feld, keine Schema-Migration nötig). Das Cockpit zeigt laufende Verträge und
+    beendete bis 180 Tage nach Lieferende (Nachlauf).
+47. **Texte:** Name und Anschrift bleiben Platzhalter in eckigen Klammern und werden nie
+    gespeichert. Lieferende im Kündigungstext = geplantes Lieferende, sonst der Vorschlag
+    (das spätere aus frühestmöglichem Ende und Bonus-Mindestbelieferung). Kopieren, Teilen
+    (`navigator.share`, falls vorhanden) und E-Mail (`mailto:`).
+48. **Kalender (.ics):** Einmal-Export (kein Abo ohne Server). Ganztägige Termine, Erinnerung am
+    Vortag 9 Uhr und am empfohlenen Kündigungstag; verstrichene und erledigte Fristen fehlen.
+    Ablese-Erinnerung als **eine** wiederkehrende Serie (`RRULE:FREQ=DAILY;INTERVAL=n`) ab der
+    nächsten fälligen Ablesung. Stabile UIDs, damit ein erneuter Import aktualisiert statt
+    verdoppelt (je nach Kalender-App). Geprüft per `ical.js` (nur Test-Abhängigkeit).
+49. **Anbieter-Zeitstrahl:** eigenes SVG statt Recharts (Bänder mit echten Datumsgrenzen und
+    Marker sind so einfacher und leichter). Farbe je Anbieter in fester Reihenfolge des ersten
+    Auftretens aus der dataviz-Standardpalette (validiert hell/dunkel, CVD ΔE ≥ 10); ab dem 9. Anbieter neutral statt zyklisch. Marker unterscheiden sich in der Form (●, ◆, ▼). Bänder
+    sind Buttons in einer `group` (axe: keine bedienbaren Elemente in `role="img"`).
+50. **Messwerte Phase 3** (Lighthouse 12, mobil, 3 Läufe): Performance 91–92, Accessibility 100,
+    Best Practices 100. Start-JS 205 KB gzip (+2 KB für Fristen-Leiste und Start-Hinweise).
+
+## Phase 4 – Analyse, Vergleich, Datensicherheit (26.11.2026)
+
+51. **Angebote:** Erfassung mit Neukunden- und Sofortbonus (häufigster Fall bei Portalen); die
+    Verbrauchsbasis ist die Prognose und lässt sich je Energieart überschreiben (z. B. für den
+    Portal-Vergleichswert). Break-even zwischen den beiden besten Angeboten nach Jahr 1.
+    „Als neuen Vertrag anlegen“ befüllt den Assistenten (Lieferbeginn = Tag nach dem Lieferende
+    des laufenden Vertrags). Links nur mit `http(s)`, geöffnet mit `noopener noreferrer`.
+52. **Backup-Format:** `{format:'strom-gas-tracker', version:1, exportedAt, data}` mit allen
+    Tabellen (inkl. gelöschter Einträge für sauberes Zusammenführen), Einstellungen und optional
+    Fotos als Data-URL (nur Bildtypen). Jedes zod-Schema ist per `z.ZodType<Typ>` an das
+    Datenmodell gebunden – ändert sich ein Typ, schlägt der Typecheck fehl. Unbekannte Felder
+    entfallen. **Zusammenführen:** gleiche ID → neuere `updatedAt` gewinnt, Einstellungen des
+    Geräts bleiben. **Ersetzen:** alles inkl. Einstellungen aus der Sicherung.
+53. **Backup-Erinnerung:** 30 Tage nach den ersten eigenen Ablesungen bzw. der letzten Sicherung
+    (Banner in der Übersicht). `navigator.storage.persist()` wird beim Sichern und per Knopf
+    angefragt; der Status steht unter „Mehr“. CSV-Export mit UTF-8-BOM für Excel.
+54. **Fotos:** vor dem Speichern per Canvas auf ≤ 1600 px (JPEG 0,82); ohne Bild-API, bei
+    Lesefehlern oder größerem Ergebnis bleibt das Original. „Galerie je Ablesung“ als Fotogalerie
+    im Verlauf (ein Foto je Ablesung, wie im Datenmodell).
+55. **Wechsel-Bilanz** nur mit Referenztarif (unter „Mehr“); Boni zählen erst erhalten/verrechnet.
+    **Jahresbericht** unter `/bericht`: Drucken schaltet für den Druck aufs helle Design,
+    Navigation und Toasts sind im Druck ausgeblendet.
+56. **Wetter:** Dexie-Version 2 mit `weather`-Cache (je Ort, Tagesmittel als lückenlose Reihe).
+    Anfragen nur nach Opt-in (Ortssuche, Archiv), Antworten per zod geprüft; beim Start
+    aktualisiert, wenn älter als 3 Tage oder der Zeitraum nicht reicht; offline still zurück
+    auf Promille. Opt-out löscht den Cache. Quellenangabe „Open-Meteo.com (CC BY 4.0)“.
+57. **CSP und zod:** zod 4 prüft per `new Function`, ob `eval` erlaubt ist – unsere CSP blockt
+    das (gewollt), der Browser meldete einen Verstoß (seit Phase 1 auf Seiten mit Formularen,
+    unbemerkt, weil kein Konsolenfehler entsteht). Fix: `z.config({ jitless: true })` in
+    `src/lib/zod.ts`; ESLint verbietet direkte zod-Importe. E2E lauscht auf
+    `securitypolicyviolation` (Gegenprobe: ohne Fix rot).
+58. **Start-Performance:** Wetter blockiert den ersten Inhalt nicht; der Netz-Teil (mit zod)
+    wird nur nach Opt-in nachgeladen. Messwerte Phase 4 (Lighthouse 12, mobil, 4 Läufe):
+    Performance 89–92, Accessibility 100, Best Practices 100; Start-JS 210 KB gzip.

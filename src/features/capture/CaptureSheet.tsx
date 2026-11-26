@@ -29,6 +29,7 @@ import {
   UNIT_LABEL,
 } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { compressImage } from '@/lib/image';
 
 interface CaptureSheetProps {
   open: boolean;
@@ -187,7 +188,7 @@ function CaptureForm({
     if (!parsed.ok || !canSave) return;
     setSaving(true);
     try {
-      const photoId = photo ? await savePhoto(photo) : undefined;
+      const photoId = photo ? await savePhoto(await compressImage(photo)) : undefined;
       const reading = await addReading(
         {
           meterId: meter.id,

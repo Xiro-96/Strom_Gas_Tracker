@@ -1,11 +1,13 @@
 import { Outlet, useLocation } from 'react-router';
 import { BottomNav } from '@/app/layout/BottomNav';
 import { Sidebar } from '@/app/layout/Sidebar';
+import { WeatherSync } from '@/features/settings/WeatherSync';
+import { StartupHints } from '@/features/switch/StartupHints';
 
 export function AppLayout() {
   const { pathname } = useLocation();
   return (
-    <div className="min-h-dvh md:grid md:grid-cols-[16rem_minmax(0,1fr)]">
+    <div className="min-h-dvh md:grid md:grid-cols-[16rem_minmax(0,1fr)] print:block">
       <a
         href="#inhalt"
         onClick={(event) => {
@@ -32,6 +34,8 @@ export function AppLayout() {
         </div>
       </main>
       <BottomNav />
+      <StartupHints />
+      <WeatherSync />
     </div>
   );
 }

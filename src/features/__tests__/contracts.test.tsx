@@ -295,3 +295,20 @@ describe('Übersicht – Kosten', () => {
     );
   });
 });
+
+describe('Anbieter-Zeitstrahl (Diagramm 6)', () => {
+  it('zeigt ein Band je Vertrag, Details per Antippen und eine Tabelle', async () => {
+    const user = userEvent.setup();
+    const meter = await stromzaehler();
+    await vertrag(meter.id);
+    renderRoute('/vertraege');
+    expect(await screen.findByRole('heading', { name: 'Anbieter-Zeitstrahl' })).toBeInTheDocument();
+    const band = screen.getByRole('button', { name: /^Strom: Blitzwerk, .* – läuft/ });
+    await user.click(band);
+    expect(band).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText(/30,00 ct\/kWh zu Beginn/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Anbieter-Zeitstrahl als Tabelle' }));
+    const table = screen.getByRole('table', { name: 'Anbieter-Zeitstrahl' });
+    expect(within(table).getByText('Strom: Blitzwerk')).toBeInTheDocument();
+  });
+});

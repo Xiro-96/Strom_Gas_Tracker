@@ -76,7 +76,21 @@ export interface Contract extends BaseEntity {
   };
   status: 'planned' | 'active' | 'cancelled' | 'ended';
   notes?: string;
+  /** Wechsel-Cockpit: von Hand abgehakte Schritte (Datum des Hakens). */
+  switchChecklist?: Partial<Record<SwitchStep, ISODate>>;
 }
+
+/** Spec 7.3 (6) – Schritte der Wechsel-Checkliste. */
+export type SwitchStep =
+  | 'offer_chosen'
+  | 'cancelled'
+  | 'confirmed'
+  | 'new_contract'
+  | 'switch_reading'
+  | 'reported'
+  | 'final_bill'
+  | 'bonus_checked'
+  | 'credit_received';
 
 export interface PricePeriod extends BaseEntity {
   contractId: string;

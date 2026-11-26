@@ -7,6 +7,7 @@ import type {
   Offer,
   Photo,
   PricePeriod,
+  ISODate,
   Reading,
   Settings,
   Transaction,
@@ -20,6 +21,17 @@ import type {
  *   this.version(2).stores({ readings: 'id, meterId, date, [meterId+date], kind' })
  *     .upgrade((tx) => tx.table('readings').toCollection().modify((r) => { … }));
  */
+/** Wetter-Cache (Open-Meteo, nur nach Opt-in): Tagesmittel ab `from`, lückenlos je Tag. */
+export interface WeatherCache {
+  /** Ort, gerundet auf 0,01° (`lat,lon`) */
+  id: string;
+  lat: number;
+  lon: number;
+  from: ISODate;
+  temps: (number | null)[];
+  fetchedAt: string;
+}
+
 export class TrackerDB extends Dexie {
   meters!: EntityTable<Meter, 'id'>;
   readings!: EntityTable<Reading, 'id'>;
@@ -31,6 +43,7 @@ export class TrackerDB extends Dexie {
   offers!: EntityTable<Offer, 'id'>;
   photos!: EntityTable<Photo, 'id'>;
   settings!: EntityTable<Settings, 'id'>;
+  weather!: EntityTable<WeatherCache, 'id'>;
 
   constructor(name = 'strom-gas-tracker') {
     super(name);
@@ -46,6 +59,8 @@ export class TrackerDB extends Dexie {
       photos: 'id',
       settings: 'id',
     });
+    // Phase 4: Wetter-Cache für die witterungsbereinigte Gas-Auswertung
+    this.version(2).stores({ weather: 'id' });
   }
 }
 

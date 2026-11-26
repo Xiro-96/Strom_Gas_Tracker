@@ -174,6 +174,10 @@ Kosten(d) = kWh(d) × Arbeitspreis(d) ÷ 100 + Grundpreis_Jahr(d) ÷ Tage_im_Kal
 
 ### 8.6 Fristen
 
+Umsetzung: `deadlines.ts` (Engine), `ics.ts` (Kalender), `switch.ts` (Checkliste, Texte),
+`timeline.ts` (Diagramm 6). Testfall E: Laufzeitende 31.12.2026 → 1 Monat 30.11.2026,
+6 Wochen 19.11.2026, 2 Wochen 17.12.2026.
+
 - **Ende Erstlaufzeit** = Start (Lieferbeginn oder Vertragsschluss, je `termStartsAt`) +
   Erstlaufzeit − 1 Tag.
 - **Kündigungs-Deadline** (Zugang beim Anbieter) = (Laufzeitende + 1 Tag − Kündigungsfrist) − 1 Tag.
@@ -206,7 +210,20 @@ Kosten(d) = kWh(d) × Arbeitspreis(d) ÷ 100 + Grundpreis_Jahr(d) ÷ Tage_im_Kal
 - Warnungen: Anbieter oder Konzern in den letzten 12 Monaten genutzt; Laufzeit > 12 Monate;
   eingeschränkte Preisgarantie; Boni > 20 % der Jahreskosten („Lockangebot – Folgejahr prüfen“).
 - **Break-even-Verbrauch** zwischen zwei Angeboten:
-  `kWh* = (GP_B − GP_A) ÷ ((AP_A − AP_B) ÷ 100)`.
+  `kWh* = (GP_B − GP_A) ÷ ((AP_A − AP_B) ÷ 100)`; kein Wert bei gleichem Arbeitspreis oder
+  wenn ein Angebot in beidem günstiger ist.
+- Umsetzung: `offers.ts` (Testfall J). Wechsel-Bilanz: `savings.ts` (Referenzkosten −
+  (tatsächliche Kosten − erhaltene/verrechnete Boni) je beliefertem Tag); Jahresbericht: `report.ts`.
+
+### 8.9 Wetter (Opt-in)
+
+- Gradtagzahl G20/15 je Tag; Normaljahr = Mittel je Kalendertag über die letzten 10 vollen Jahre.
+- Gas-Gewicht mit Wetter: `anteil(d) = b ÷ Tage_im_Jahr + (1 − b) × G(d) ÷ G_Normaljahr` – G(d)
+  gemessen, sonst aus dem Normaljahr (Zukunft, Lücken). Gilt für Verteilung, Prognose und
+  Kostenprognose; ohne Wetterdaten bleibt die Promille-Methode.
+- Witterungsbereinigter Trend: `(kWh_jetzt ÷ Σanteil_jetzt) ÷ (kWh_Vorjahr ÷ Σanteil_Vorjahr) − 1`.
+- Diagramm 8: Ø kWh/Tag je Intervall gegen Ø Außentemperatur (≥ 80 % Tage mit Messwert),
+  lineare Regression (Steigung = kWh/Tag je °C). Umsetzung: `weather.ts`.
 
 ---
 

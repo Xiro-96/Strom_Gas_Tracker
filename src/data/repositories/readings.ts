@@ -56,3 +56,12 @@ export async function savePhoto(blob: Blob): Promise<string> {
 export async function getPhoto(id: string): Promise<Photo | undefined> {
   return db.photos.get(id);
 }
+
+/** Zeitpunkt der ersten eigenen (nicht Demo-)Ablesung – Start der Backup-Erinnerung. */
+export async function firstOwnDataAt(): Promise<string | undefined> {
+  const own = (await db.readings.toArray()).filter((r) => isActive(r) && !r.isDemo);
+  return own.reduce<string | undefined>(
+    (min, r) => (!min || r.createdAt < min ? r.createdAt : min),
+    undefined,
+  );
+}

@@ -15,12 +15,22 @@ import {
   type ChartRange,
 } from '@/domain/charts';
 import { addDays } from '@/domain/dates';
+import type { Interval } from '@/domain/intervals';
 import type { EnergyType } from '@/domain/types';
 import { CumulativeChart, DailyStepChart, MonthlyBarsChart } from '@/features/analytics/charts';
 import { CostCharts } from '@/features/analytics/CostCharts';
+import { TemperatureChart } from '@/features/analytics/TemperatureChart';
+import { temperatureScatter } from '@/domain/weather';
 import { ENERGY } from '@/features/shared/energy';
 import { useCostData } from '@/features/contracts/useCostData';
-import { formatDate, formatKwh, formatMonth, formatNumber, formatTrend } from '@/lib/format';
+import {
+  formatDate,
+  formatKwh,
+  formatMonth,
+  formatNumber,
+  formatPerDay,
+  formatTrend,
+} from '@/lib/format';
 
 const RANGES: { value: ChartRange; label: string; short: string }[] = [
   { value: '3m', label: '3 Monate', short: '3 M' },
@@ -218,7 +228,69 @@ export function AnalyticsPage() {
         <CumulativeChart years={view.years} color={color} />
       </ChartCard>
 
+      {energy === 'gas' ? (
+        <GasTemperature
+          analysisIntervals={analysis?.intervals ?? []}
+          temps={data.temps}
+          color={color}
+        />
+      ) : null}
+
       <CostCharts energy={energy} costs={costs} bounds={view.bounds} />
     </>
+  );
+}
+
+function GasTemperature({
+  analysisIntervals,
+  temps,
+  color,
+}: {
+  analysisIntervals: Interval[];
+  temps: ReadonlyMap<string, number> | null;
+  color: string;
+}) {
+  if (!temps) {
+    return (
+      <Card className="flex-row items-center justify-between gap-3 px-5 text-sm">
+        <span className="text-muted-foreground">
+          Gas gegen Außentemperatur: Wetter unter „Mehr“ aktivieren (optional).
+        </span>
+        <Button asChild size="sm" variant="outline">
+          <Link to="/mehr">Einstellungen</Link>
+        </Button>
+      </Card>
+    );
+  }
+  const { points, regression } = temperatureScatter(analysisIntervals, temps);
+  if (points.length === 0) return null;
+  return (
+    <ChartCard
+      title="Gas und Außentemperatur"
+      description={`Je Ableseintervall Ø kWh pro Tag gegen Ø Außentemperatur${
+        regression
+          ? ` – pro Grad wärmer ${formatNumber(Math.abs(regression.slope), 1, 1)} kWh/Tag ${regression.slope < 0 ? 'weniger' : 'mehr'} (R² ${formatNumber(regression.r2, 2, 2)})`
+          : ''
+      }. Wetterdaten: Open-Meteo.com`}
+      legend={[
+        { label: 'Intervall', color },
+        { label: 'Trend', color: 'var(--muted-foreground)', variant: 'dashed' },
+      ]}
+      table={
+        <DataTable
+          caption="Gas und Außentemperatur"
+          head={['Zeitraum', 'Ø °C', 'kWh/Tag']}
+          rows={[...points]
+            .reverse()
+            .map((p) => [
+              `${formatDate(p.from)} – ${formatDate(addDays(p.to, -1))}`,
+              formatNumber(p.meanTemp, 1, 1),
+              formatPerDay(p.perDay),
+            ])}
+        />
+      }
+    >
+      <TemperatureChart points={points} regression={regression} color={color} />
+    </ChartCard>
   );
 }

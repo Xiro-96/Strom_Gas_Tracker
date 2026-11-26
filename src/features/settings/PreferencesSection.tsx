@@ -6,6 +6,7 @@ import { updateSettings } from '@/data/repositories/settings';
 
 const INTERVALS = [7, 10, 14, 21, 28, 30];
 const BASE_LOADS = [0.1, 0.15, 0.2, 0.25, 0.3];
+const BUFFERS = [0, 3, 5, 7, 10, 14, 21, 30];
 
 export function PreferencesSection() {
   const settings = useSettings();
@@ -14,7 +15,7 @@ export function PreferencesSection() {
     <Card>
       <CardHeader>
         <CardTitle>
-          <h2>Ablesen &amp; Auswertung</h2>
+          <h2>Ablesen, Fristen &amp; Auswertung</h2>
         </CardTitle>
         <CardDescription>
           Ab dem 1,5-fachen Intervall gilt eine Ablesung als überfällig.
@@ -29,6 +30,24 @@ export function PreferencesSection() {
             {INTERVALS.map((d) => (
               <option key={d} value={d}>
                 alle {d} Tage{d === 14 ? ' (Standard)' : ''}
+              </option>
+            ))}
+          </NativeSelect>
+        </Field>
+        <Field
+          label="Kündigungspuffer"
+          hint="So viele Tage vor der Kündigungsfrist empfiehlt die App zu kündigen."
+        >
+          <NativeSelect
+            value={String(settings.cancellationBufferDays)}
+            onChange={(e) =>
+              void updateSettings({ cancellationBufferDays: Number(e.target.value) })
+            }
+          >
+            {BUFFERS.map((d) => (
+              <option key={d} value={d}>
+                {d === 0 ? 'kein Puffer' : `${String(d)} Tage vorher`}
+                {d === 7 ? ' (Standard)' : ''}
               </option>
             ))}
           </NativeSelect>

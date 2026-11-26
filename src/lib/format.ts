@@ -94,3 +94,12 @@ export function describeBalance(eur: number): {
   if (Math.abs(eur) < 0.5) return { label: 'Ausgeglichen', amount: formatEur(0) };
   return { label: eur < 0 ? 'Guthaben' : 'Nachzahlung', amount: formatEur(Math.abs(eur)) };
 }
+
+/** Tage bis zu einer Frist → „heute“, „morgen“, „noch 6 Tage“, „seit 3 Tagen überfällig“. */
+export function formatCountdown(days: number): string {
+  if (days === 0) return 'heute';
+  if (days === 1) return 'morgen';
+  if (days > 1) return `noch ${String(days)} Tage`;
+  const n = Math.abs(days);
+  return `seit ${String(n)} ${n === 1 ? 'Tag' : 'Tagen'} überfällig`;
+}

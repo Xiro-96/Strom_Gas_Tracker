@@ -5,7 +5,7 @@ import {
   type Interval,
   type IntervalError,
 } from '@/domain/intervals';
-import type { EnergyType, Meter, Reading } from '@/domain/types';
+import type { EnergyType, ISODate, Meter, Reading } from '@/domain/types';
 
 export interface EnergyAnalysis {
   energyType: EnergyType;
@@ -17,6 +17,8 @@ export interface EnergyAnalysis {
   intervals: Interval[];
   errors: IntervalError[];
   daily: DailyPoint[];
+  /** Tagesgewichte mit Wetterdaten (Gas, nach Opt-in) – auch für Prognosen. */
+  weight?: (date: ISODate) => number;
 }
 
 /** Bündelt Intervalle und Tagesverteilung einer Energieart über alle Zähler der Kette. */
@@ -25,6 +27,7 @@ export function analyzeEnergy(
   allReadings: readonly Reading[],
   energyType: EnergyType,
   baseLoadShare: number,
+  weight?: (date: ISODate) => number,
 ): EnergyAnalysis {
   const meters = allMeters
     .filter((m) => m.energyType === energyType)
@@ -35,6 +38,16 @@ export function analyzeEnergy(
   const lastReading =
     readings.filter((r) => r.meterId === currentMeter?.id).at(-1) ?? readings.at(-1);
   const { intervals, errors } = buildIntervals(readings, meters);
-  const daily = distribute(intervals, { energyType, baseLoadShare });
-  return { energyType, meters, currentMeter, readings, lastReading, intervals, errors, daily };
+  const daily = distribute(intervals, { energyType, baseLoadShare, ...(weight ? { weight } : {}) });
+  return {
+    energyType,
+    meters,
+    currentMeter,
+    readings,
+    lastReading,
+    intervals,
+    errors,
+    daily,
+    ...(weight ? { weight } : {}),
+  };
 }

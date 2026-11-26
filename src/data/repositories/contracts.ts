@@ -1,7 +1,15 @@
 import type { EntityTable, Table } from 'dexie';
 import { db } from '@/data/db';
 import { isActive, nowISO, stamp, type NewEntity } from '@/data/entity';
-import type { Bill, Bonus, Contract, PricePeriod, Transaction } from '@/domain/types';
+import type {
+  Bill,
+  Bonus,
+  Contract,
+  ISODate,
+  PricePeriod,
+  SwitchStep,
+  Transaction,
+} from '@/domain/types';
 
 export type NewContract = NewEntity<Contract>;
 
@@ -82,6 +90,22 @@ export async function updateContract(
     await assertNoOverlap(next, id);
     await db.contracts.put({ ...next, updatedAt: nowISO() });
   });
+}
+
+/** Wechsel-Cockpit: Schritt von Hand abhaken (Datum) oder Haken entfernen (null). */
+export async function setSwitchStep(
+  contractId: string,
+  step: SwitchStep,
+  date: ISODate | null,
+): Promise<void> {
+  await db.contracts
+    .where('id')
+    .equals(contractId)
+    .modify((c) => {
+      const others = Object.entries(c.switchChecklist ?? {}).filter(([key]) => key !== step);
+      c.switchChecklist = Object.fromEntries(date ? [...others, [step, date]] : others);
+      c.updatedAt = nowISO();
+    });
 }
 
 const CHILD_TABLES = () =>

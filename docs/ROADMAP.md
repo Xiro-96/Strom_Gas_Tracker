@@ -35,24 +35,25 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - [x] Diagramme 4, 5 und 7; Kostenkarten in der Übersicht; „So gerechnet“-Popover; Zeitraum „Vertrag“
 - [x] **Abnahme:** Testfälle A, B, C, D, F und H grün; E2E „Vertrag anlegen → Kosten und Saldo sichtbar“
 
-## Phase 3 – Wechsel-Cockpit und Erinnerungen
+## Phase 3 – Wechsel-Cockpit und Erinnerungen ✅
 
-- [ ] Fristen-Engine (6.6) inkl. Sonderkündigung, Schlussrechnung und Guthaben
-- [ ] Wechsel-Cockpit mit Checkliste, Status-Flow (aktiv → gekündigt → beendet) und Text-Generatoren (Kündigung, Zählerstandsmeldung)
-- [ ] Fristen-Leiste in der Übersicht; Hinweise beim App-Start
-- [ ] Kalender-Export (.ics) mit `VALARM` und wiederkehrender Ablese-Erinnerung (`RRULE`)
-- [ ] Anbieter-Zeitstrahl (Diagramm 6)
-- [ ] **Abnahme:** Testfall E grün; .ics importiert sauber in iOS- und Google-Kalender
+- [x] Fristen-Engine (6.6) inkl. Sonderkündigung, Schlussrechnung und Guthaben
+- [x] Wechsel-Cockpit mit Checkliste, Status-Flow (aktiv → gekündigt → beendet) und Text-Generatoren (Kündigung, Zählerstandsmeldung)
+- [x] Fristen-Leiste in der Übersicht; Hinweise beim App-Start
+- [x] Kalender-Export (.ics) mit `VALARM` und wiederkehrender Ablese-Erinnerung (`RRULE`)
+- [x] Anbieter-Zeitstrahl (Diagramm 6)
+- [x] Zusätzlich: Kündigungspuffer in den Einstellungen; „Guthaben erhalten“ an Rechnungen
+- [ ] **Abnahme:** Testfall E grün ✅; .ics nach RFC 5545 gebaut und per ical.js-Rundlauf sowie E2E-Download geprüft – der Import in iOS- und Google-Kalender steht noch aus (am Gerät testen)
 
-## Phase 4 – Analyse, Vergleich, Datensicherheit
+## Phase 4 – Analyse, Vergleich, Datensicherheit ✅
 
-- [ ] Angebotsvergleich (6.8) mit Warnungen und Break-even
-- [ ] Wetter-Opt-in (Open-Meteo, Ortssuche), witterungsbereinigte Gas-Auswertung, Diagramm 8
-- [ ] Wechsel-Bilanz „Durch Wechseln gespart seit …“
-- [ ] Backup: JSON-Export/-Import (versioniert, zod, Fotos optional, Zusammenführen/Ersetzen); CSV-Export der Ablesungen (Excel-DE; Import ist seit Phase 1 da); Backup-Erinnerung alle 30 Tage; `navigator.storage.persist()`; Safari-Hinweis
-- [ ] Fotos clientseitig komprimieren (max. ~1600 px), Galerie je Ablesung
-- [ ] Jahresbericht als Druckansicht
-- [ ] **Abnahme:** Testfall J grün; Backup stellt auf einem zweiten Gerät alles wieder her
+- [x] Angebotsvergleich (6.8) mit Warnungen und Break-even; Referenztarife; „Als neuen Vertrag anlegen“
+- [x] Wetter-Opt-in (Open-Meteo, Ortssuche), witterungsbereinigte Gas-Auswertung, Diagramm 8
+- [x] Wechsel-Bilanz „Durch Wechseln gespart seit …“
+- [x] Backup: JSON-Export/-Import (versioniert, zod, Fotos optional, Zusammenführen/Ersetzen); CSV-Export der Ablesungen (Excel-DE; Import ist seit Phase 1 da); Backup-Erinnerung alle 30 Tage; `navigator.storage.persist()`; Safari-Hinweis
+- [x] Fotos clientseitig komprimieren (max. ~1600 px), Fotogalerie im Verlauf
+- [x] Jahresbericht als Druckansicht
+- [x] **Abnahme:** Testfall J grün; Backup stellt auf einem zweiten Gerät alles wieder her (Unit-Test mit zweiter Datenbank, E2E mit frischem Browser-Kontext) – am echten Zweitgerät noch testen
 
 ## Phase 5 – Optional, nur nach Rücksprache
 
@@ -69,3 +70,9 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - Verbrauchsabhängiger Bonus (Spec 4.3, Falle 2): Flag `consumptionDependent` im Formular + Hinweis.
 - Lücken ohne Vertrag optional mit einem Referenztarif bewerten (Spec 6.3).
 - Vertrags-Assistent auch zum Bearbeiten (heute: Inline-Formulare auf der Detailseite).
+- Kalender-Abo statt Einmal-Export (bräuchte einen Server – widerspricht „kein Backend“ bis Phase 5).
+- Kündigungsschreiben mit Hinweis auf den Neukundenbonus („bitte mit der Schlussrechnung verrechnen“).
+- Checkliste im Cockpit einklappen, solange kein Wechsel ansteht.
+- Mehrere Fotos je Ablesung (heute ein Foto je Ablesung, Galerie über alle Ablesungen).
+- Angebote bearbeiten (heute: löschen und neu erfassen); Bonus-Varianten jenseits Neukunden-/Sofortbonus.
+- Wetter: Gas-Gradtage auch für die Plausibilitätsprüfung (Ausreißer) nutzen.

@@ -8,6 +8,7 @@ import { DataSection } from '@/features/settings/DataSection';
 import { InstallGuide } from '@/features/settings/InstallGuide';
 import { MetersSection } from '@/features/settings/MetersSection';
 import { PreferencesSection } from '@/features/settings/PreferencesSection';
+import { ReferenceTariffsSection } from '@/features/settings/ReferenceTariffsSection';
 import { ThemeSetting } from '@/features/settings/ThemeSetting';
 
 export function MorePage() {
@@ -38,6 +39,7 @@ export function MorePage() {
       <DataSection />
       <CalendarSection />
       <PreferencesSection />
+      <ReferenceTariffsSection />
 
       <Card>
         <CardHeader>

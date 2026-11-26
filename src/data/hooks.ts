@@ -7,6 +7,7 @@ import {
   transactions,
 } from '@/data/repositories/contracts';
 import { hasDemoData } from '@/data/repositories/demo';
+import { listOffers } from '@/data/repositories/offers';
 import { listMeters } from '@/data/repositories/meters';
 import { listReadings } from '@/data/repositories/readings';
 import { getSettings } from '@/data/repositories/settings';
@@ -15,6 +16,7 @@ import type {
   Bonus,
   Contract,
   Meter,
+  Offer,
   PricePeriod,
   Reading,
   Settings,
@@ -58,4 +60,8 @@ export function useContractData(): ContractData | undefined {
     ]);
     return { contracts: c, pricePeriods: p, bonuses: b, bills: bi, transactions: t };
   }, []);
+}
+
+export function useOffers(): Offer[] | undefined {
+  return useLiveQuery(listOffers, []);
 }

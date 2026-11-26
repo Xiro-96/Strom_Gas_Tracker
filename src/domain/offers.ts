@@ -16,7 +16,10 @@ export type OfferLike = Pick<
     Pick<Offer, 'providerGroup' | 'minTermMonths' | 'priceGuaranteeMonths' | 'priceGuaranteeScope'>
   >;
 
-interface Price { energyPriceCt: number; basePriceEurPerYear: number }
+interface Price {
+  energyPriceCt: number;
+  basePriceEurPerYear: number;
+}
 
 const yearCost = (p: Price, kwh: number) => (kwh * p.energyPriceCt) / 100 + p.basePriceEurPerYear;
 

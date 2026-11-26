@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { db } from '@/data/db';
 import { createMeter } from '@/data/repositories/meters';
@@ -145,5 +145,38 @@ describe('Import', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Importieren' }));
     expect(await within(dialog).findByText(/3 neu · 0 schon vorhanden/)).toBeInTheDocument();
     expect(await listReadings()).toHaveLength(3);
+  });
+});
+
+describe('Zähler – Gasfaktoren', () => {
+  it('speichert neue Gasfaktoren mit „gültig ab“ als weiteren Abschnitt', async () => {
+    const user = userEvent.setup();
+    await createMeter({
+      energyType: 'gas',
+      name: 'Gaszähler',
+      unit: 'm3',
+      decimals: 3,
+      activeFrom: '2025-01-01',
+      gasFactors: [{ validFrom: '2025-01-01', zFactor: 0.95, calorificValue: 11 }],
+    });
+    renderRoute('/mehr');
+    await user.click(await screen.findByRole('button', { name: 'Gaszähler bearbeiten' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Zähler bearbeiten' });
+    expect(within(dialog).getByText(/ab 01\.01\.2025: z 0,9500 · Hs 11,000/)).toBeInTheDocument();
+    fireEvent.change(within(dialog).getByLabelText('Faktoren gültig ab'), {
+      target: { value: '2026-01-01' },
+    });
+    await user.clear(within(dialog).getByLabelText('Zustandszahl z'));
+    await user.type(within(dialog).getByLabelText('Zustandszahl z'), '0,9412');
+    await user.clear(within(dialog).getByLabelText('Brennwert Hs (kWh/m³)'));
+    await user.type(within(dialog).getByLabelText('Brennwert Hs (kWh/m³)'), '10,274');
+    await user.click(within(dialog).getByRole('button', { name: 'Speichern' }));
+    await waitFor(async () => {
+      const [meter] = await db.meters.toArray();
+      expect(meter?.gasFactors).toEqual([
+        { validFrom: '2025-01-01', zFactor: 0.95, calorificValue: 11 },
+        { validFrom: '2026-01-01', zFactor: 0.9412, calorificValue: 10.274 },
+      ]);
+    });
   });
 });

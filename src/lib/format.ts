@@ -80,3 +80,17 @@ export function formatTrend(ratio: number): string {
   if (pct === 0) return '±0 %';
   return `${pct > 0 ? '+' : '−'}${Math.abs(pct)} %`;
 }
+
+/** 28.47 → „28,47 ct/kWh“ (2–4 Nachkommastellen, Spec 6.1); Effektivpreise mit `maxDigits` 2. */
+export function formatCt(value: number, maxDigits = 4): string {
+  return `${nf(2, maxDigits).format(value)} ct/kWh`;
+}
+
+/** Saldo > 0 = Nachzahlung, < 0 = Guthaben */
+export function describeBalance(eur: number): {
+  label: 'Guthaben' | 'Nachzahlung' | 'Ausgeglichen';
+  amount: string;
+} {
+  if (Math.abs(eur) < 0.5) return { label: 'Ausgeglichen', amount: formatEur(0) };
+  return { label: eur < 0 ? 'Guthaben' : 'Nachzahlung', amount: formatEur(Math.abs(eur)) };
+}

@@ -11,9 +11,10 @@ Fristen über jährliche Anbieterwechsel hinweg im Griff behalten und neue Angeb
 - 🔒 Kein Konto, keine Cloud, kein Tracking: alle Daten bleiben lokal auf dem Gerät
 - 🧮 Jede Zahl ist nachvollziehbar („So wurde gerechnet“)
 
-> Status: **Phase 1 – Zähler und Verbrauch** ist fertig: Zähler anlegen, Schnellerfassung,
-> Verlauf, Zählerwechsel, CSV-Import, Demo-Daten, Übersicht und Diagramme. Was als Nächstes kommt,
-> steht in [`docs/ROADMAP.md`](docs/ROADMAP.md).
+> Status: **Phase 2 – Verträge, Preise, Boni, Kosten** ist fertig: Vertrags-Assistent,
+> Preisperioden, Boni mit Sicherheitscheck, Abschläge, Rechnungen, Kosten, Effektivpreis und
+> Abschlags-Check samt Diagrammen – auf Phase 1 (Zähler, Schnellerfassung, Verlauf, CSV-Import,
+> Verbrauchsdiagramme). Was als Nächstes kommt, steht in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## App installieren
 

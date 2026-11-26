@@ -22,6 +22,16 @@ describe('rangeBounds', () => {
     expect(rangeBounds('year', '2026-11-25')).toEqual({ from: '2026-01-01', to: '2027-01-01' });
     expect(rangeBounds('all', '2026-11-25')).toEqual({ from: '0000-01-01', to: '2026-11-26' });
   });
+
+  it('„Vertrag“ zeigt den Abrechnungszeitraum des laufenden Vertrags', () => {
+    const period = { from: '2026-01-01', to: '2026-12-31' };
+    expect(rangeBounds('contract', '2026-11-25', period)).toEqual({
+      from: '2026-01-01',
+      to: '2027-01-01',
+    });
+    // ohne Vertrag wie „12 Monate“
+    expect(rangeBounds('contract', '2026-11-25')).toEqual(rangeBounds('12m', '2026-11-25'));
+  });
 });
 
 describe('stepSeries – Diagramm 1', () => {

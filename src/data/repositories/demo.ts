@@ -20,13 +20,14 @@ export async function loadDemoData(today: ISODate = todayISO()): Promise<void> {
   const demo = generateDemoData(today);
   await db.transaction(
     'rw',
-    [db.meters, db.readings, db.contracts, db.pricePeriods, db.bonuses],
+    [db.meters, db.readings, db.contracts, db.pricePeriods, db.bonuses, db.bills],
     async () => {
       await db.meters.bulkAdd(demo.meters);
       await db.readings.bulkAdd(demo.readings);
       await db.contracts.bulkAdd(demo.contracts);
       await db.pricePeriods.bulkAdd(demo.pricePeriods);
       await db.bonuses.bulkAdd(demo.bonuses);
+      await db.bills.bulkAdd(demo.bills);
     },
   );
 }

@@ -1,20 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
-
-async function seriousViolations(page: Page) {
-  // Service Worker bereit (Offline-Toast ist dann erschienen), danach Einblend-Animationen abwarten –
-  // sonst misst axe halbtransparente Kontraste.
-  await page.evaluate(async () => {
-    await navigator.serviceWorker.ready;
-  });
-  await page.waitForTimeout(700);
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-    .analyze();
-  return results.violations
-    .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-    .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);
-}
+import { expect, test } from '@playwright/test';
+import { seriousViolations } from './axe';
 
 test('Onboarding → Ablesung erfassen (< 10 s) → Übersicht zeigt den Wert', async ({ page }) => {
   await page.goto('./');
@@ -67,7 +52,8 @@ test('Demo-Daten: Übersicht, Verlauf und Diagramme 1–3 ohne Fehler und barrie
   for (const name of ['Tagesverbrauch', 'Monatsverbrauch', 'Kumuliert im Jahr']) {
     await expect(page.getByRole('heading', { name })).toBeVisible();
   }
-  await expect(page.locator('.recharts-surface')).toHaveCount(3);
+  // 3 Verbrauchs- + 3 Kostendiagramme (Demo-Verträge, Phase 2)
+  await expect(page.locator('.recharts-surface')).toHaveCount(6);
   await expect(page.locator('.recharts-bar-rectangle').first()).toBeVisible();
   expect(await seriousViolations(page)).toEqual([]);
   expect(problems).toEqual([]);

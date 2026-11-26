@@ -5,7 +5,7 @@ import type { DailyPoint } from '@/domain/distribution';
 import type { Interval } from '@/domain/intervals';
 import type { ISODate } from '@/domain/types';
 
-export type ChartRange = '3m' | '12m' | 'year' | 'all';
+export type ChartRange = '3m' | '12m' | 'year' | 'contract' | 'all';
 export interface Bounds {
   from: ISODate;
   to: ISODate;
@@ -13,10 +13,21 @@ export interface Bounds {
 
 const shiftYears = (date: ISODate, years: number) => toISODate(addYears(fromISODate(date), years));
 
-/** Zeitraum [from, to) relativ zum letzten Datentag. */
-export function rangeBounds(range: ChartRange, lastDay: ISODate): Bounds {
+/**
+ * Zeitraum [from, to) relativ zum letzten Datentag. „Vertrag“ = Abrechnungszeitraum des laufenden
+ * Vertrags (letzter Tag inklusive); ohne Vertrag wie „12 Monate“.
+ */
+export function rangeBounds(
+  range: ChartRange,
+  lastDay: ISODate,
+  contractPeriod?: { from: ISODate; to: ISODate },
+): Bounds {
   const to = addDays(lastDay, 1);
   switch (range) {
+    case 'contract':
+      return contractPeriod
+        ? { from: contractPeriod.from, to: addDays(contractPeriod.to, 1) }
+        : rangeBounds('12m', lastDay);
     case '3m':
       return { from: addMonthsISO(to, -3), to };
     case '12m':

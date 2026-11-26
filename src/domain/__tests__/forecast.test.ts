@@ -87,3 +87,24 @@ describe('forecastAnnual – Strom (Spec 6.4)', () => {
     expect(forecastAnnual([], [], { energyType: 'electricity', baseLoadShare: 0.15 })).toBeNull();
   });
 });
+
+describe('projectedDaily – Restzeitraum (Testfall C)', () => {
+  it('Teilzeitraum 01.–15.11. (b = 0) = 60 ‰ des Jahresverbrauchs', async () => {
+    const { projectedDaily } = await import('@/domain/forecast');
+    const points = projectedDaily(12500, '2026-11-01', '2026-11-16', {
+      energyType: 'gas',
+      baseLoadShare: 0,
+    });
+    expect(points).toHaveLength(15);
+    expect(points.reduce((s, p) => s + p.kwh, 0)).toBeCloseTo(750, 9);
+  });
+
+  it('Strom gleichmäßig: 3.650 kWh/Jahr → 10 kWh je Tag', async () => {
+    const { projectedDaily } = await import('@/domain/forecast');
+    const points = projectedDaily(3650, '2026-03-01', '2026-03-11', {
+      energyType: 'electricity',
+      baseLoadShare: 0.15,
+    });
+    expect(points.every((p) => Math.abs(p.kwh - 10) < 1e-9)).toBe(true);
+  });
+});

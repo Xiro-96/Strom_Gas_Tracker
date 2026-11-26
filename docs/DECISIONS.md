@@ -160,3 +160,38 @@ Format: Datum · Entscheidung · Grund.
     sind Buttons in einer `group` (axe: keine bedienbaren Elemente in `role="img"`).
 50. **Messwerte Phase 3** (Lighthouse 12, mobil, 3 Läufe): Performance 91–92, Accessibility 100,
     Best Practices 100. Start-JS 205 KB gzip (+2 KB für Fristen-Leiste und Start-Hinweise).
+
+## Phase 4 – Analyse, Vergleich, Datensicherheit (26.11.2026)
+
+51. **Angebote:** Erfassung mit Neukunden- und Sofortbonus (häufigster Fall bei Portalen); die
+    Verbrauchsbasis ist die Prognose und lässt sich je Energieart überschreiben (z. B. für den
+    Portal-Vergleichswert). Break-even zwischen den beiden besten Angeboten nach Jahr 1.
+    „Als neuen Vertrag anlegen“ befüllt den Assistenten (Lieferbeginn = Tag nach dem Lieferende
+    des laufenden Vertrags). Links nur mit `http(s)`, geöffnet mit `noopener noreferrer`.
+52. **Backup-Format:** `{format:'strom-gas-tracker', version:1, exportedAt, data}` mit allen
+    Tabellen (inkl. gelöschter Einträge für sauberes Zusammenführen), Einstellungen und optional
+    Fotos als Data-URL (nur Bildtypen). Jedes zod-Schema ist per `z.ZodType<Typ>` an das
+    Datenmodell gebunden – ändert sich ein Typ, schlägt der Typecheck fehl. Unbekannte Felder
+    entfallen. **Zusammenführen:** gleiche ID → neuere `updatedAt` gewinnt, Einstellungen des
+    Geräts bleiben. **Ersetzen:** alles inkl. Einstellungen aus der Sicherung.
+53. **Backup-Erinnerung:** 30 Tage nach den ersten eigenen Ablesungen bzw. der letzten Sicherung
+    (Banner in der Übersicht). `navigator.storage.persist()` wird beim Sichern und per Knopf
+    angefragt; der Status steht unter „Mehr“. CSV-Export mit UTF-8-BOM für Excel.
+54. **Fotos:** vor dem Speichern per Canvas auf ≤ 1600 px (JPEG 0,82); ohne Bild-API, bei
+    Lesefehlern oder größerem Ergebnis bleibt das Original. „Galerie je Ablesung“ als Fotogalerie
+    im Verlauf (ein Foto je Ablesung, wie im Datenmodell).
+55. **Wechsel-Bilanz** nur mit Referenztarif (unter „Mehr“); Boni zählen erst erhalten/verrechnet.
+    **Jahresbericht** unter `/bericht`: Drucken schaltet für den Druck aufs helle Design,
+    Navigation und Toasts sind im Druck ausgeblendet.
+56. **Wetter:** Dexie-Version 2 mit `weather`-Cache (je Ort, Tagesmittel als lückenlose Reihe).
+    Anfragen nur nach Opt-in (Ortssuche, Archiv), Antworten per zod geprüft; beim Start
+    aktualisiert, wenn älter als 3 Tage oder der Zeitraum nicht reicht; offline still zurück
+    auf Promille. Opt-out löscht den Cache. Quellenangabe „Open-Meteo.com (CC BY 4.0)“.
+57. **CSP und zod:** zod 4 prüft per `new Function`, ob `eval` erlaubt ist – unsere CSP blockt
+    das (gewollt), der Browser meldete einen Verstoß (seit Phase 1 auf Seiten mit Formularen,
+    unbemerkt, weil kein Konsolenfehler entsteht). Fix: `z.config({ jitless: true })` in
+    `src/lib/zod.ts`; ESLint verbietet direkte zod-Importe. E2E lauscht auf
+    `securitypolicyviolation` (Gegenprobe: ohne Fix rot).
+58. **Start-Performance:** Wetter blockiert den ersten Inhalt nicht; der Netz-Teil (mit zod)
+    wird nur nach Opt-in nachgeladen. Messwerte Phase 4 (Lighthouse 12, mobil, 4 Läufe):
+    Performance 89–92, Accessibility 100, Best Practices 100; Start-JS 210 KB gzip.

@@ -45,15 +45,15 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - [x] Zusätzlich: Kündigungspuffer in den Einstellungen; „Guthaben erhalten“ an Rechnungen
 - [ ] **Abnahme:** Testfall E grün ✅; .ics nach RFC 5545 gebaut und per ical.js-Rundlauf sowie E2E-Download geprüft – der Import in iOS- und Google-Kalender steht noch aus (am Gerät testen)
 
-## Phase 4 – Analyse, Vergleich, Datensicherheit
+## Phase 4 – Analyse, Vergleich, Datensicherheit ✅
 
-- [ ] Angebotsvergleich (6.8) mit Warnungen und Break-even
-- [ ] Wetter-Opt-in (Open-Meteo, Ortssuche), witterungsbereinigte Gas-Auswertung, Diagramm 8
-- [ ] Wechsel-Bilanz „Durch Wechseln gespart seit …“
-- [ ] Backup: JSON-Export/-Import (versioniert, zod, Fotos optional, Zusammenführen/Ersetzen); CSV-Export der Ablesungen (Excel-DE; Import ist seit Phase 1 da); Backup-Erinnerung alle 30 Tage; `navigator.storage.persist()`; Safari-Hinweis
-- [ ] Fotos clientseitig komprimieren (max. ~1600 px), Galerie je Ablesung
-- [ ] Jahresbericht als Druckansicht
-- [ ] **Abnahme:** Testfall J grün; Backup stellt auf einem zweiten Gerät alles wieder her
+- [x] Angebotsvergleich (6.8) mit Warnungen und Break-even; Referenztarife; „Als neuen Vertrag anlegen“
+- [x] Wetter-Opt-in (Open-Meteo, Ortssuche), witterungsbereinigte Gas-Auswertung, Diagramm 8
+- [x] Wechsel-Bilanz „Durch Wechseln gespart seit …“
+- [x] Backup: JSON-Export/-Import (versioniert, zod, Fotos optional, Zusammenführen/Ersetzen); CSV-Export der Ablesungen (Excel-DE; Import ist seit Phase 1 da); Backup-Erinnerung alle 30 Tage; `navigator.storage.persist()`; Safari-Hinweis
+- [x] Fotos clientseitig komprimieren (max. ~1600 px), Fotogalerie im Verlauf
+- [x] Jahresbericht als Druckansicht
+- [x] **Abnahme:** Testfall J grün; Backup stellt auf einem zweiten Gerät alles wieder her (Unit-Test mit zweiter Datenbank, E2E mit frischem Browser-Kontext) – am echten Zweitgerät noch testen
 
 ## Phase 5 – Optional, nur nach Rücksprache
 
@@ -73,3 +73,6 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - Kalender-Abo statt Einmal-Export (bräuchte einen Server – widerspricht „kein Backend“ bis Phase 5).
 - Kündigungsschreiben mit Hinweis auf den Neukundenbonus („bitte mit der Schlussrechnung verrechnen“).
 - Checkliste im Cockpit einklappen, solange kein Wechsel ansteht.
+- Mehrere Fotos je Ablesung (heute ein Foto je Ablesung, Galerie über alle Ablesungen).
+- Angebote bearbeiten (heute: löschen und neu erfassen); Bonus-Varianten jenseits Neukunden-/Sofortbonus.
+- Wetter: Gas-Gradtage auch für die Plausibilitätsprüfung (Ausreißer) nutzen.

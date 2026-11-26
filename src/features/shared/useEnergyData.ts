@@ -27,7 +27,8 @@ export function useEnergyData(): EnergyData {
   const settings = useSettings();
   const temps = useWeatherSeries();
   return useMemo<EnergyData>(() => {
-    if (!meters || !readings || !settings || temps === undefined) return { status: 'loading' };
+    // Wetter blockiert den ersten Inhalt nicht: ohne (noch) geladene Temperaturen gilt Promille
+    if (!meters || !readings || !settings) return { status: 'loading' };
     // Normaljahr = die letzten 10 vollen Jahre (Spec 6.2)
     const thisYear = Number(todayISO().slice(0, 4));
     const normal = temps
@@ -50,6 +51,6 @@ export function useEnergyData(): EnergyData {
         settings.gasBaseLoadShare,
         e === 'gas' ? (gasWeight ?? undefined) : undefined,
       );
-    return { status: 'ready', meters, readings, settings, energies, analyses, temps };
+    return { status: 'ready', meters, readings, settings, energies, analyses, temps: temps ?? null };
   }, [meters, readings, settings, temps]);
 }

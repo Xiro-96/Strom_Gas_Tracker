@@ -156,3 +156,41 @@ for (const theme of ['dark', 'light'] as const) {
     expect(await seriousViolations(page)).toEqual([]);
   });
 }
+
+test('keine CSP-Verstöße – auch nicht auf Seiten mit Formularen (zod)', async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as unknown as { cspViolations: string[] }).cspViolations = [];
+    document.addEventListener('securitypolicyviolation', (e) => {
+      (window as unknown as { cspViolations: string[] }).cspViolations.push(
+        `${e.violatedDirective} ${e.blockedURI}`,
+      );
+    });
+  });
+  const violations = () =>
+    page.evaluate(() => (window as unknown as { cspViolations: string[] }).cspViolations);
+  await page.goto('./');
+  await page.getByRole('button', { name: /Zähler anlegen/ }).click();
+  const meterForm = page.getByRole('dialog', { name: 'Zähler anlegen' });
+  // leer absenden → zod-Validierung läuft, dann gültig anlegen
+  await meterForm.getByRole('button', { name: 'Zähler anlegen' }).click();
+  await meterForm.getByLabel(/Aktueller Stand/).fill('1000');
+  await meterForm.getByRole('button', { name: 'Zähler anlegen' }).click();
+  await expect(page.getByRole('heading', { name: 'Strom' })).toBeVisible();
+  expect(await violations()).toEqual([]);
+  await page.goto('./#/vertraege');
+  await page.getByRole('button', { name: 'Vertrag anlegen' }).click();
+  await page
+    .getByRole('dialog', { name: 'Neuer Vertrag' })
+    .getByRole('button', { name: 'Weiter' })
+    .click();
+  expect(await violations()).toEqual([]);
+  await page.goto('./#/angebote');
+  await page.getByRole('button', { name: 'Angebot erfassen' }).first().click();
+  await page
+    .getByRole('dialog', { name: 'Angebot erfassen' })
+    .getByRole('button', { name: 'Angebot speichern' })
+    .click();
+  await page.goto('./#/mehr');
+  await expect(page.getByRole('heading', { name: 'Sicherung' })).toBeVisible();
+  expect(await violations()).toEqual([]);
+});

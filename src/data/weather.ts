@@ -1,17 +1,22 @@
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import { db, type WeatherCache } from '@/data/db';
+import {
+  cacheToSeries,
+  clearWeather,
+  locationKey,
+  loadWeatherSeries,
+  needsRefresh,
+  NORMAL_YEARS,
+  weatherRange,
+} from '@/data/weatherCache';
 import { nowISO } from '@/data/entity';
 import { getSettings } from '@/data/repositories/settings';
-import { addDays, daysBetween, eachDay } from '@/domain/dates';
-import type { ISODate, Settings } from '@/domain/types';
+import { addDays, eachDay } from '@/domain/dates';
+import type { ISODate } from '@/domain/types';
 
 /** Spec 3/11 – einzige externe Anfrage: Open-Meteo, nur nach Opt-in (Hosts stehen in der CSP). */
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search';
 const ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive';
-/** Archivdaten liegen mit einigen Tagen Verzug vor. */
-const ARCHIVE_DELAY_DAYS = 5;
-const REFRESH_AFTER_DAYS = 3;
-export const NORMAL_YEARS = 10;
 
 export interface Place {
   name: string;
@@ -22,8 +27,6 @@ export interface Place {
 }
 
 type Fetch = (url: string) => Promise<Response>;
-
-export const locationKey = (lat: number, lon: number) => `${lat.toFixed(2)},${lon.toFixed(2)}`;
 
 const geocodingSchema = z.object({
   results: z
@@ -66,26 +69,6 @@ export async function searchPlaces(query: string, fetchImpl: Fetch = fetch): Pro
   }));
 }
 
-/** Benötigter Zeitraum: 10 volle Jahre fürs Normaljahr bis zur ersten Ablesung, bis vor wenigen Tagen. */
-export function weatherRange(
-  firstReading: ISODate | undefined,
-  today: ISODate,
-): { from: ISODate; to: ISODate } {
-  const normalStart = `${String(Number(today.slice(0, 4)) - NORMAL_YEARS)}-01-01`;
-  const from = firstReading && firstReading < normalStart ? firstReading : normalStart;
-  return { from, to: addDays(today, -ARCHIVE_DELAY_DAYS) };
-}
-
-export function needsRefresh(
-  cache: Pick<WeatherCache, 'from' | 'fetchedAt'> | undefined,
-  range: { from: ISODate },
-  today: ISODate,
-): boolean {
-  if (!cache) return true;
-  if (cache.from > range.from) return true;
-  return daysBetween(cache.fetchedAt.slice(0, 10), today) >= REFRESH_AFTER_DAYS;
-}
-
 /** Tagesmittel aus dem Open-Meteo-Archiv laden und lokal speichern. */
 export async function refreshWeather(
   location: { lat: number; lon: number },
@@ -118,23 +101,6 @@ export async function refreshWeather(
   return cache;
 }
 
-/** Gecachte Temperaturen als Map (ohne Lücken-Einträge). */
-export function cacheToSeries(cache: Pick<WeatherCache, 'from' | 'temps'>): Map<ISODate, number> {
-  const series = new Map<ISODate, number>();
-  cache.temps.forEach((t, i) => {
-    if (t !== null) series.set(addDays(cache.from, i), t);
-  });
-  return series;
-}
-
-export async function loadWeatherSeries(
-  settings: Pick<Settings, 'weatherOptIn' | 'location'>,
-): Promise<Map<ISODate, number> | null> {
-  if (!settings.weatherOptIn || !settings.location) return null;
-  const cache = await db.weather.get(locationKey(settings.location.lat, settings.location.lon));
-  return cache ? cacheToSeries(cache) : null;
-}
-
 /** Beim App-Start: nur mit Opt-in und Ort, nur wenn nötig. Fehler bleiben still (Promille-Fallback). */
 export async function syncWeather(
   firstReading: ISODate | undefined,
@@ -154,10 +120,6 @@ export async function syncWeather(
   }
 }
 
-export async function clearWeather(): Promise<void> {
-  await db.weather.clear();
-}
-
 /** App-Start: erste Ablesung ermitteln und bei Bedarf aktualisieren (nur mit Opt-in). */
 export async function syncWeatherOnStart(
   today: ISODate,
@@ -165,3 +127,13 @@ export async function syncWeatherOnStart(
   const first = await db.readings.orderBy('date').first();
   return syncWeather(first?.date, today);
 }
+
+export {
+  cacheToSeries,
+  clearWeather,
+  locationKey,
+  loadWeatherSeries,
+  needsRefresh,
+  NORMAL_YEARS,
+  weatherRange,
+};

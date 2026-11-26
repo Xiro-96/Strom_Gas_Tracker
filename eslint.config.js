@@ -31,6 +31,11 @@ export default defineConfig([
       '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      // zod nur über '@/lib/zod' (jitless, CSP-konform)
+      'no-restricted-imports': [
+        'error',
+        { paths: [{ name: 'zod', message: "Bitte '@/lib/zod' importieren (jitless wegen CSP)." }] },
+      ],
       'no-restricted-syntax': [
         'error',
         {
@@ -40,6 +45,10 @@ export default defineConfig([
         },
       ],
     },
+  },
+  {
+    files: ['src/lib/zod.ts'],
+    rules: { 'no-restricted-imports': 'off' },
   },
   {
     files: ['**/*.{js,mjs,cjs}'],

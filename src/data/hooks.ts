@@ -12,7 +12,7 @@ import { listOffers } from '@/data/repositories/offers';
 import { listMeters } from '@/data/repositories/meters';
 import { firstOwnDataAt, listReadings } from '@/data/repositories/readings';
 import { getSettings } from '@/data/repositories/settings';
-import { locationKey, loadWeatherSeries } from '@/data/weather';
+import { locationKey, loadWeatherSeries } from '@/data/weatherCache';
 import type {
   Bill,
   Bonus,

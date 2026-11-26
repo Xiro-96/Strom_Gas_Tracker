@@ -11,10 +11,10 @@ Fristen über jährliche Anbieterwechsel hinweg im Griff behalten und neue Angeb
 - 🔒 Kein Konto, keine Cloud, kein Tracking: alle Daten bleiben lokal auf dem Gerät
 - 🧮 Jede Zahl ist nachvollziehbar („So wurde gerechnet“)
 
-> Status: **Phase 2 – Verträge, Preise, Boni, Kosten** ist fertig: Vertrags-Assistent,
-> Preisperioden, Boni mit Sicherheitscheck, Abschläge, Rechnungen, Kosten, Effektivpreis und
-> Abschlags-Check samt Diagrammen – auf Phase 1 (Zähler, Schnellerfassung, Verlauf, CSV-Import,
-> Verbrauchsdiagramme). Was als Nächstes kommt, steht in [`docs/ROADMAP.md`](docs/ROADMAP.md).
+> Status: **Phase 3 – Wechsel-Cockpit und Erinnerungen** ist fertig: Fristen-Engine,
+> Fristen-Leiste, Hinweise beim Start, Wechsel-Cockpit mit Checkliste und fertigen Texten,
+> Kalender-Export (.ics) und Anbieter-Zeitstrahl – auf Phase 1 und 2 (Zähler, Verbrauch,
+> Verträge, Kosten). Was als Nächstes kommt, steht in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## App installieren
 

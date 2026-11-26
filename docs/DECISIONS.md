@@ -123,3 +123,40 @@ Format: Datum · Entscheidung · Grund.
 41. **Messwerte Phase 2** (Lighthouse 12, mobil, lokaler Preview-Build, 3 Läufe): Performance 91–92,
     Accessibility 100, Best Practices 100. Start-JS 203 KB gzip (Phase 1: 197 KB; +5 KB für die
     Kosten in der Übersicht). Verträge, Detailseite und Diagramme werden lazy geladen.
+
+## Phase 3 – Wechsel-Cockpit und Erinnerungen (26.11.2026)
+
+42. **Kündigungsfrist nur für feste Enden:** Erstlaufzeit, feste Verlängerung oder ein geplantes
+    Lieferende. Nach der Erstlaufzeit mit monatlicher Verlängerung gibt es keine „wandernde“ Frist
+    (sie läge jeden Tag auf heute); das Cockpit zeigt dann „frühestmögliches Lieferende bei
+    Kündigung heute“. Ist die Kündigung gesendet, entfällt die Frist.
+43. **Zustände einer Frist:** erledigt, überfällig, verstrichen, bald (≤ 14 Tage), geplant.
+    Kündigung, Sonderkündigung, Preisgarantie-Ende und Wechseltag-Ablesung **verstreichen** nach
+    ihrem Datum (nachholen geht nicht); Bonus-Prüfung, Schlussrechnung, Guthaben und Ablesung
+    werden **überfällig** (Spec 4.6: Überschreitungen markieren).
+44. **Wechseltag** = Lieferende + 1 Tag; eine Ablesung ±1 Tag gilt als Wechseltag-Ablesung.
+    Neukundenbonus prüfen = Rechnungsdatum der Schlussrechnung, sonst Lieferende + 6 Wochen.
+45. **Fristen-Leiste** zeigt die dringendste offene Frist (überfällig zuerst, dann nach Datum),
+    ohne „nächste Ablesung“ – die zeigen die Energiekarten. **Hinweise beim Start**: Fristen
+    überfällig oder in ≤ 7 Tagen als ein Toast, höchstens einmal pro Tag (`localStorage`
+    `sgt-hints-shown`, Gerätekomfort). Die Hinweise lesen die Daten einmalig, nicht live.
+46. **Checkliste:** Schritte, die sich aus den Daten ergeben (Kündigung, Bestätigung, Nachfolger
+    mit Lieferbeginn = Wechseltag, Wechseltag-Ablesung, Schlussrechnung, Boni erledigt,
+    Guthaben), werden automatisch abgehakt; die übrigen speichert `Contract.switchChecklist`
+    (optionales Feld, keine Schema-Migration nötig). Das Cockpit zeigt laufende Verträge und
+    beendete bis 180 Tage nach Lieferende (Nachlauf).
+47. **Texte:** Name und Anschrift bleiben Platzhalter in eckigen Klammern und werden nie
+    gespeichert. Lieferende im Kündigungstext = geplantes Lieferende, sonst der Vorschlag
+    (das spätere aus frühestmöglichem Ende und Bonus-Mindestbelieferung). Kopieren, Teilen
+    (`navigator.share`, falls vorhanden) und E-Mail (`mailto:`).
+48. **Kalender (.ics):** Einmal-Export (kein Abo ohne Server). Ganztägige Termine, Erinnerung am
+    Vortag 9 Uhr und am empfohlenen Kündigungstag; verstrichene und erledigte Fristen fehlen.
+    Ablese-Erinnerung als **eine** wiederkehrende Serie (`RRULE:FREQ=DAILY;INTERVAL=n`) ab der
+    nächsten fälligen Ablesung. Stabile UIDs, damit ein erneuter Import aktualisiert statt
+    verdoppelt (je nach Kalender-App). Geprüft per `ical.js` (nur Test-Abhängigkeit).
+49. **Anbieter-Zeitstrahl:** eigenes SVG statt Recharts (Bänder mit echten Datumsgrenzen und
+    Marker sind so einfacher und leichter). Farbe je Anbieter in fester Reihenfolge des ersten
+    Auftretens aus der dataviz-Standardpalette (validiert hell/dunkel, CVD ΔE ≥ 10); ab dem 9. Anbieter neutral statt zyklisch. Marker unterscheiden sich in der Form (●, ◆, ▼). Bänder
+    sind Buttons in einer `group` (axe: keine bedienbaren Elemente in `role="img"`).
+50. **Messwerte Phase 3** (Lighthouse 12, mobil, 3 Läufe): Performance 91–92, Accessibility 100,
+    Best Practices 100. Start-JS 205 KB gzip (+2 KB für Fristen-Leiste und Start-Hinweise).

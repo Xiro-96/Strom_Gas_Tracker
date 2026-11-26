@@ -174,6 +174,10 @@ Kosten(d) = kWh(d) × Arbeitspreis(d) ÷ 100 + Grundpreis_Jahr(d) ÷ Tage_im_Kal
 
 ### 8.6 Fristen
 
+Umsetzung: `deadlines.ts` (Engine), `ics.ts` (Kalender), `switch.ts` (Checkliste, Texte),
+`timeline.ts` (Diagramm 6). Testfall E: Laufzeitende 31.12.2026 → 1 Monat 30.11.2026,
+6 Wochen 19.11.2026, 2 Wochen 17.12.2026.
+
 - **Ende Erstlaufzeit** = Start (Lieferbeginn oder Vertragsschluss, je `termStartsAt`) +
   Erstlaufzeit − 1 Tag.
 - **Kündigungs-Deadline** (Zugang beim Anbieter) = (Laufzeitende + 1 Tag − Kündigungsfrist) − 1 Tag.

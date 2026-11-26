@@ -35,6 +35,7 @@
 **Files:** Create `src/domain/deadlines.ts`, Test `src/domain/__tests__/deadlines.test.ts`
 
 **Interfaces – Produces:**
+
 - `termEnd(contract): ISODate | undefined` – Start je `termStartsAt` + `minTermMonths` − 1 Tag.
 - `cancellationDeadline(end: ISODate, notice: Contract['noticePeriod']): ISODate`
 - `earliestDeliveryEnd(contract, today): ISODate | undefined` – erstes Laufzeitende, dessen Deadline ≥ heute (Erstlaufzeit; danach monatlich: heute + Frist; feste Verlängerung: Folgeperioden).
@@ -62,6 +63,7 @@
 **Files:** Create `src/domain/switch.ts`, Test `src/domain/__tests__/switch.test.ts`; Modify `src/domain/types.ts` (`Contract.switchChecklist?: Partial<Record<SwitchStep, ISODate>>`)
 
 **Interfaces – Produces:**
+
 - `SWITCH_STEPS` (9 Schritte in Spec-Reihenfolge: `offer_chosen, cancelled, confirmed, new_contract, switch_reading, reported, final_bill, bonus_checked, credit_received`) mit Label.
 - `switchProgress({ contract, successor?, bonuses, bills, readings, today }): { step: SwitchStep; label: string; done: boolean; auto: boolean; date?: ISODate }[]` – automatisch erkannt: gekündigt (`cancellation.sentAt`), Bestätigung (`confirmedAt`), neuer Vertrag (Nachfolger mit Lieferbeginn = Lieferende + 1), Wechseltag-Ablesung (Ablesung ±1 Tag), Schlussrechnung (Bill `final`), Bonus geprüft (Neukundenbonus nicht mehr zugesagt/fällig), Guthaben (Schlussrechnung ohne Guthaben oder `balanceSettledAt`); sonst manuell aus `switchChecklist`.
 - `suggestedDeliveryEnd(contract, bonuses, today): { date: ISODate; reason: 'term' | 'bonus' }` – max(frühestmögliches Lieferende, nötiges Bonus-Lieferende).

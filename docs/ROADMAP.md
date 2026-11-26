@@ -35,14 +35,15 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - [x] Diagramme 4, 5 und 7; Kostenkarten in der Übersicht; „So gerechnet“-Popover; Zeitraum „Vertrag“
 - [x] **Abnahme:** Testfälle A, B, C, D, F und H grün; E2E „Vertrag anlegen → Kosten und Saldo sichtbar“
 
-## Phase 3 – Wechsel-Cockpit und Erinnerungen
+## Phase 3 – Wechsel-Cockpit und Erinnerungen ✅
 
-- [ ] Fristen-Engine (6.6) inkl. Sonderkündigung, Schlussrechnung und Guthaben
-- [ ] Wechsel-Cockpit mit Checkliste, Status-Flow (aktiv → gekündigt → beendet) und Text-Generatoren (Kündigung, Zählerstandsmeldung)
-- [ ] Fristen-Leiste in der Übersicht; Hinweise beim App-Start
-- [ ] Kalender-Export (.ics) mit `VALARM` und wiederkehrender Ablese-Erinnerung (`RRULE`)
-- [ ] Anbieter-Zeitstrahl (Diagramm 6)
-- [ ] **Abnahme:** Testfall E grün; .ics importiert sauber in iOS- und Google-Kalender
+- [x] Fristen-Engine (6.6) inkl. Sonderkündigung, Schlussrechnung und Guthaben
+- [x] Wechsel-Cockpit mit Checkliste, Status-Flow (aktiv → gekündigt → beendet) und Text-Generatoren (Kündigung, Zählerstandsmeldung)
+- [x] Fristen-Leiste in der Übersicht; Hinweise beim App-Start
+- [x] Kalender-Export (.ics) mit `VALARM` und wiederkehrender Ablese-Erinnerung (`RRULE`)
+- [x] Anbieter-Zeitstrahl (Diagramm 6)
+- [x] Zusätzlich: Kündigungspuffer in den Einstellungen; „Guthaben erhalten“ an Rechnungen
+- [ ] **Abnahme:** Testfall E grün ✅; .ics nach RFC 5545 gebaut und per ical.js-Rundlauf sowie E2E-Download geprüft – der Import in iOS- und Google-Kalender steht noch aus (am Gerät testen)
 
 ## Phase 4 – Analyse, Vergleich, Datensicherheit
 
@@ -69,3 +70,6 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - Verbrauchsabhängiger Bonus (Spec 4.3, Falle 2): Flag `consumptionDependent` im Formular + Hinweis.
 - Lücken ohne Vertrag optional mit einem Referenztarif bewerten (Spec 6.3).
 - Vertrags-Assistent auch zum Bearbeiten (heute: Inline-Formulare auf der Detailseite).
+- Kalender-Abo statt Einmal-Export (bräuchte einen Server – widerspricht „kein Backend“ bis Phase 5).
+- Kündigungsschreiben mit Hinweis auf den Neukundenbonus („bitte mit der Schlussrechnung verrechnen“).
+- Checkliste im Cockpit einklappen, solange kein Wechsel ansteht.

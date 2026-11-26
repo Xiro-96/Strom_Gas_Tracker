@@ -12,7 +12,14 @@ import { todayISO } from '@/domain/dates';
 import { Section } from '@/features/contracts/detail/Section';
 import { useCostData } from '@/features/contracts/useCostData';
 import { ENERGY } from '@/features/shared/energy';
-import { formatCt, formatDate, formatEur, formatKwh, formatMonth } from '@/lib/format';
+import {
+  formatCt,
+  formatDate,
+  formatEur,
+  formatKwh,
+  formatMonth,
+  formatNumber,
+} from '@/lib/format';
 
 /** Drucken im hellen Design – „Als PDF sichern“ im Druckdialog. */
 function printLight() {
@@ -171,8 +178,10 @@ export function ReportPage() {
               <tbody className="divide-y">
                 {r.months.map((m) => (
                   <tr key={m.month}>
-                    <td className="py-1 pr-3">{formatMonth(m.month)}</td>
-                    <td className="py-1 pl-3 text-right">{formatKwh(m.kwh)}</td>
+                    <td className="py-1 pr-3">
+                      {formatMonth(m.month).replace(` ${String(year)}`, '')}
+                    </td>
+                    <td className="py-1 pl-3 text-right">{formatNumber(m.kwh, 0, 0)}</td>
                     <td className="py-1 pl-3 text-right">{formatEur(m.energyEur + m.baseEur)}</td>
                     <td className="py-1 pl-3 text-right">{formatEur(m.installmentEur)}</td>
                   </tr>

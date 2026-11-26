@@ -39,6 +39,7 @@ export function OfferBars({ data, color }: { data: OfferBarDatum[]; color: strin
         <YAxis
           type="category"
           dataKey="name"
+          interval={0}
           tick={AXIS_TICK}
           tickLine={false}
           axisLine={false}

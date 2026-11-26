@@ -74,9 +74,9 @@ function ReferenceForm({ settings }: { settings: Settings }) {
           }}
         >
           {ENERGY_TYPES.map((e) => (
-            <fieldset key={e} className="grid grid-cols-3 gap-3">
+            <fieldset key={e} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               <legend className="mb-2 text-sm font-medium">{ENERGY[e].label}</legend>
-              <Field label={`Bezeichnung ${ENERGY[e].label}`}>
+              <Field label={`Bezeichnung ${ENERGY[e].label}`} className="col-span-2 sm:col-span-1">
                 <Input
                   autoComplete="off"
                   value={values[e].label}

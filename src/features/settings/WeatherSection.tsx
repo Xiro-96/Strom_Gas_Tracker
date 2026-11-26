@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useSettings, useWeatherInfo } from '@/data/hooks';
+import type { Settings } from '@/domain/types';
 import { updateSettings } from '@/data/repositories/settings';
 import { clearWeather, searchPlaces, syncWeatherOnStart, type Place } from '@/data/weather';
 import { todayISO } from '@/domain/dates';
@@ -15,13 +16,20 @@ const placeLabel = (p: Place) => [p.name, p.region, p.country].filter(Boolean).j
 /** Spec Phase 4 – Wetter-Opt-in (Open-Meteo) mit Ortssuche; einzige externe Anfrage der App. */
 export function WeatherSection() {
   const settings = useSettings();
+  if (!settings) return null;
+  return <WeatherForm settings={settings} />;
+}
+
+function WeatherForm({ settings }: { settings: Settings }) {
   const info = useWeatherInfo();
+  // Die Wahl gilt sofort (die Live-Abfrage der Einstellungen folgt einen Moment später)
+  const [choice, setChoice] = useState<boolean | null>(null);
+  const optIn = choice ?? settings.weatherOptIn;
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Place[] | null>(null);
   const [busy, setBusy] = useState(false);
   const optInId = useId();
   const queryId = useId();
-  if (!settings) return null;
 
   const refresh = async () => {
     setBusy(true);
@@ -49,9 +57,10 @@ export function WeatherSection() {
             id={optInId}
             type="checkbox"
             className="mt-0.5 size-5 shrink-0 accent-primary"
-            checked={settings.weatherOptIn}
+            checked={optIn}
             onChange={(e) => {
               const on = e.target.checked;
+              setChoice(on);
               void updateSettings({ weatherOptIn: on }).then(async () => {
                 if (!on) {
                   await clearWeather();
@@ -72,7 +81,7 @@ export function WeatherSection() {
           </span>
         </label>
 
-        {settings.weatherOptIn ? (
+        {optIn ? (
           <>
             {settings.location ? (
               <div className="flex flex-wrap items-center gap-3 rounded-xl border px-3 py-2 text-sm">

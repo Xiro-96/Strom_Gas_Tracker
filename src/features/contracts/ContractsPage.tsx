@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { contractStatus } from '@/domain/contractStatus';
-import type { Contract } from '@/domain/types';
+import type { Bill, Contract } from '@/domain/types';
 import { ContractWizard } from '@/features/contracts/ContractWizard';
 import { CONTRACT_STATUS, currentMeters, deliveryLabel } from '@/features/contracts/labels';
 import { useCostData, type EnergyCosts } from '@/features/contracts/useCostData';
@@ -95,6 +95,9 @@ export function ContractsPage() {
                   key={contract.id}
                   contract={contract}
                   costs={cost.byEnergy[energy]}
+                  finalBill={cost.contracts.bills
+                    .filter((b) => b.contractId === contract.id && b.balanceEur !== undefined)
+                    .at(-1)}
                   today={cost.today}
                 />
               ))}
@@ -110,15 +113,24 @@ export function ContractsPage() {
 function ContractLink({
   contract,
   costs,
+  finalBill,
   today,
 }: {
   contract: Contract;
   costs: EnergyCosts | undefined;
+  /** Letzte Rechnung mit Saldo – ersetzt nach Abrechnung die Prognose. */
+  finalBill: Bill | undefined;
   today: string;
 }) {
   const status = CONTRACT_STATUS[contractStatus(contract, today)];
   const forecast = costs?.forecasts[contract.id];
-  const balance = forecast ? describeBalance(forecast.balanceEur) : null;
+  const billed =
+    finalBill?.balanceEur !== undefined && finalBill.periodTo >= (forecast?.periodTo ?? '');
+  const balance = billed
+    ? describeBalance(finalBill.balanceEur ?? 0)
+    : forecast
+      ? describeBalance(forecast.balanceEur)
+      : null;
   const effective = forecast?.effective.withBonusCt;
   return (
     <Link
@@ -135,10 +147,11 @@ function ContractLink({
         {balance ? (
           <span className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
             <span>
+              {billed ? 'Rechnung: ' : ''}
               {balance.label} {balance.label === 'Ausgeglichen' ? '' : balance.amount}
             </span>
             {effective !== undefined && Number.isFinite(effective) ? (
-              <span className="text-muted-foreground">effektiv {formatCt(effective)}</span>
+              <span className="text-muted-foreground">effektiv {formatCt(effective, 2)}</span>
             ) : null}
           </span>
         ) : null}

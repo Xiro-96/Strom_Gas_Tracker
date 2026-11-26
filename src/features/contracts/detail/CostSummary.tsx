@@ -38,7 +38,8 @@ export function CostSummary({
 
   return (
     <Section
-      title={`Abrechnungszeitraum ${formatDate(forecast.periodFrom)} – ${formatDate(forecast.periodTo)}`}
+      title="Kosten und Saldo"
+      description={`Abrechnungszeitraum ${formatDate(forecast.periodFrom)} – ${formatDate(forecast.periodTo)}`}
       action={
         <HowCalculated>
           <p className="font-medium">
@@ -109,12 +110,12 @@ export function CostSummary({
           label="Effektivpreis"
           value={
             Number.isFinite(forecast.effective.withBonusCt)
-              ? formatCt(forecast.effective.withBonusCt)
+              ? formatCt(forecast.effective.withBonusCt, 2)
               : '–'
           }
           hint={
             Number.isFinite(forecast.effective.withoutBonusCt)
-              ? `ohne Bonus ${formatCt(forecast.effective.withoutBonusCt)}`
+              ? `ohne Bonus ${formatCt(forecast.effective.withoutBonusCt, 2)}`
               : undefined
           }
         />

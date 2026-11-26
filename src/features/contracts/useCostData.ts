@@ -5,12 +5,13 @@ import {
   cumulativeCostSeries,
   effectivePriceHistory,
   monthlyCosts,
+  monthToDateCost,
   type ContractBundle,
   type CumulativePoint,
   type EffectivePriceEntry,
   type MonthlyCost,
 } from '@/domain/costAnalysis';
-import { delivers } from '@/domain/costs';
+import { annualCostEur, delivers, pricePeriodAt } from '@/domain/costs';
 import { todayISO } from '@/domain/dates';
 import { forecastAnnual, type AnnualForecast } from '@/domain/forecast';
 import { installmentTransactions } from '@/domain/installments';
@@ -26,6 +27,11 @@ export interface EnergyCosts {
   /** Prognose je Vertrag (Schlüssel: Vertrags-ID). */
   forecasts: Partial<Record<string, ContractForecast>>;
   annual: AnnualForecast | null;
+  /** Jahreskosten der Prognose zum heute gültigen Preis (ohne Boni). */
+  annualCostEur: number | null;
+  /** Vertrag, der heute liefert (für Kosten und Abschlags-Check in der Übersicht). */
+  active?: ContractBundle;
+  monthToDate: ReturnType<typeof monthToDateCost>;
   monthly: MonthlyCost[];
   cumulative: CumulativePoint[];
   effective: EffectivePriceEntry[];
@@ -69,7 +75,9 @@ export function useCostData() {
             baseLoadShare: energy.settings.gasBaseLoadShare,
           })
         : null;
-      const current = bundles.find((b) => delivers(b, today)) ?? bundles.at(-1);
+      const active = bundles.find((b) => delivers(b, today));
+      const current = active ?? bundles.at(-1);
+      const price = active ? pricePeriodAt(active.periods, today) : undefined;
       const forecastFor = (bundle: ContractBundle) =>
         contractForecast({
           contract: bundle,
@@ -89,6 +97,16 @@ export function useCostData() {
         currentForecast: forecasts.find((f) => f.bundle.id === current?.id)?.forecast,
         forecasts: Object.fromEntries(forecasts.map((f) => [f.bundle.id, f.forecast])),
         annual,
+        annualCostEur: annual && price ? annualCostEur(annual.kwh, price) : null,
+        ...(active ? { active } : {}),
+        monthToDate: monthToDateCost({
+          bundles,
+          daily,
+          annualKwh: annual?.kwh ?? null,
+          energyType,
+          baseLoadShare: energy.settings.gasBaseLoadShare,
+          today,
+        }),
         monthly: monthlyCosts(daily, bundles),
         cumulative: current
           ? cumulativeCostSeries({

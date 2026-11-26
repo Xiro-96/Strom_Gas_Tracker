@@ -274,3 +274,24 @@ describe('Vertrags-Detail', () => {
     expect(await screen.findByText('Vertrag nicht gefunden')).toBeInTheDocument();
   });
 });
+
+describe('Übersicht – Kosten', () => {
+  it('zeigt Kosten des Monats, Jahreskosten und den Abschlags-Saldo', async () => {
+    const meter = await stromzaehler();
+    await vertrag(meter.id);
+    renderRoute('/');
+    const link = await screen.findByRole('link', { name: 'Kosten und Abschlag Blitzwerk' });
+    expect(link).toHaveTextContent('Kosten diesen Monat');
+    expect(link).toHaveTextContent(/Guthaben|Nachzahlung|Ausgeglichen/);
+    expect(screen.getByText(/Jahresprognose/).parentElement).toHaveTextContent(/≈ [\d.]+,\d\d €/);
+  });
+
+  it('weist ohne Vertrag auf den Vertrag hin', async () => {
+    await stromzaehler();
+    renderRoute('/');
+    expect(await screen.findByRole('link', { name: 'Vertrag anlegen' })).toHaveAttribute(
+      'href',
+      '/vertraege',
+    );
+  });
+});

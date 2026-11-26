@@ -1,4 +1,5 @@
 import {
+  monthToDateCost,
   cumulativeCostSeries,
   effectivePriceHistory,
   monthlyCosts,
@@ -85,5 +86,34 @@ describe('effectivePriceHistory – Diagramm 7', () => {
     ]);
     expect(history[0]?.withBonusCt.toFixed(2)).toBe('26.57');
     expect(history[0]?.withoutBonusCt.toFixed(2)).toBe('32.29');
+  });
+});
+
+describe('monthToDateCost – Kosten laufender Monat (Übersicht)', () => {
+  const input = {
+    bundles: [bundle()],
+    daily: eachDay('2026-10-01', '2026-11-21').map((date) => ({ date, kwh: 10 })),
+    annualKwh: 3650,
+    energyType: 'electricity' as const,
+    baseLoadShare: 0.15,
+    today: '2026-11-25',
+  };
+
+  it('rechnet Ist bis zur letzten Ablesung und schätzt die Tage bis heute', () => {
+    const result = monthToDateCost(input);
+    // 25 Tage × (10 kWh × 20 ct + 1 €/Tag Grundpreis)
+    expect(result?.totalEur).toBeCloseTo(25 * 3, 9);
+    expect(result?.kwh).toBeCloseTo(250, 9);
+    expect(result?.estimatedDays).toBe(5);
+  });
+
+  it('ohne Prognose zählen nur gemessene Tage', () => {
+    const result = monthToDateCost({ ...input, annualKwh: null });
+    expect(result?.kwh).toBeCloseTo(200, 9);
+    expect(result?.estimatedDays).toBe(0);
+  });
+
+  it('liefert null, wenn im Monat kein Vertrag liefert', () => {
+    expect(monthToDateCost({ ...input, today: '2027-02-10' })).toBeNull();
   });
 });

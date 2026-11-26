@@ -38,4 +38,37 @@ describe('Auswertung', () => {
     const table = await screen.findByRole('table', { name: /Tagesverbrauch Gas/ });
     expect(within(table).getAllByRole('row').length).toBeLessThan(10);
   });
+
+  it('zeigt die Kostendiagramme 4, 5 und 7 mit Tabellen (Demo-Verträge)', async () => {
+    const user = userEvent.setup();
+    await loadDemoData();
+    renderRoute('/auswertung');
+    for (const name of [
+      'Kosten je Monat',
+      'Abschläge vs. Kosten',
+      'Effektivpreis je Vertragsjahr',
+    ]) {
+      expect(await screen.findByRole('heading', { name })).toBeInTheDocument();
+    }
+    expect(screen.getByText(/^Saldo: /)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Kosten je Monat als Tabelle' }));
+    const costs = await screen.findByRole('table', { name: /Kosten je Monat Strom/ });
+    expect(within(costs).getByRole('columnheader', { name: 'Grundpreis' })).toBeInTheDocument();
+    await user.click(
+      screen.getByRole('button', { name: 'Effektivpreis je Vertragsjahr als Tabelle' }),
+    );
+    const effective = await screen.findByRole('table', { name: /Effektivpreis je Vertragsjahr/ });
+    expect(within(effective).getAllByRole('row').length).toBeGreaterThan(2);
+  });
+
+  it('bietet den Zeitraum „Vertrag“ an', async () => {
+    const user = userEvent.setup();
+    await loadDemoData();
+    renderRoute('/auswertung');
+    await user.click(await screen.findByRole('radio', { name: 'Laufender Vertrag' }));
+    expect(screen.getByRole('radio', { name: 'Laufender Vertrag' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+  });
 });

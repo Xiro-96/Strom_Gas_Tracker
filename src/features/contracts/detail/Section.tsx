@@ -3,11 +3,13 @@ import { cn } from '@/lib/utils';
 
 export function Section({
   title,
+  description,
   action,
   children,
   className,
 }: {
   title: string;
+  description?: string;
   action?: ReactNode;
   children: ReactNode;
   className?: string;
@@ -19,9 +21,12 @@ export function Section({
       className={cn('flex flex-col gap-3 rounded-2xl border bg-card p-5 shadow-card', className)}
     >
       <div className="flex items-center justify-between gap-3">
-        <h2 id={id} className="text-base font-semibold">
-          {title}
-        </h2>
+        <div className="min-w-0">
+          <h2 id={id} className="text-base font-semibold">
+            {title}
+          </h2>
+          {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
+        </div>
         {action}
       </div>
       {children}

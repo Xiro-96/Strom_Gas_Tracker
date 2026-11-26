@@ -9,6 +9,8 @@ export interface EnergyMeta {
   soft: string;
   /** CSS-Farbe für Diagramme. */
   color: string;
+  /** Zweiter Ton derselben Energieart (Grundpreis im Kostendiagramm). */
+  baseColor: string;
 }
 
 export const ENERGY: Record<EnergyType, EnergyMeta> = {
@@ -19,6 +21,7 @@ export const ENERGY: Record<EnergyType, EnergyMeta> = {
     text: 'text-electricity',
     soft: 'bg-electricity-soft',
     color: 'var(--chart-electricity)',
+    baseColor: 'var(--chart-electricity-base)',
   },
   gas: {
     label: 'Gas',
@@ -27,6 +30,7 @@ export const ENERGY: Record<EnergyType, EnergyMeta> = {
     text: 'text-gas',
     soft: 'bg-gas-soft',
     color: 'var(--chart-gas)',
+    baseColor: 'var(--chart-gas-base)',
   },
 };
 

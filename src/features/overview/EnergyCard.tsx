@@ -6,10 +6,13 @@ import { lastWindowAverage, readingStatus, trendVsPreviousYear } from '@/domain/
 import { todayISO } from '@/domain/dates';
 import { forecastAnnual, type AnnualForecast } from '@/domain/forecast';
 import { gasFactorsAt } from '@/domain/gas';
+import type { EnergyCosts } from '@/features/contracts/useCostData';
 import { Sparkline } from '@/features/overview/Sparkline';
 import { ENERGY } from '@/features/shared/energy';
 import {
+  describeBalance,
   formatDate,
+  formatEur,
   formatKwh,
   formatMeterValue,
   formatNumber,
@@ -28,10 +31,12 @@ export function EnergyCard({
   analysis,
   readingIntervalDays,
   baseLoadShare,
+  costs,
 }: {
   analysis: EnergyAnalysis;
   readingIntervalDays: number;
   baseLoadShare: number;
+  costs?: EnergyCosts | undefined;
 }) {
   const meta = ENERGY[analysis.energyType];
   const Icon = meta.icon;
@@ -99,12 +104,16 @@ export function EnergyCard({
             {forecastM3 !== undefined ? (
               <span className="tabular-nums"> (≈ {formatNumber(forecastM3, 0, 0)} m³)</span>
             ) : null}
+            {costs?.annualCostEur != null ? (
+              <span className="tabular-nums"> · ≈ {formatEur(costs.annualCostEur)}</span>
+            ) : null}
             <span className="text-muted-foreground">
               {' · '}
               {forecast.uncertain ? 'unsicher – noch wenig Daten' : BASIS_LABEL[forecast.method]}
             </span>
           </p>
         ) : null}
+        <CostRow costs={costs} />
         <div className="flex items-center justify-between gap-3 border-t pt-3 text-sm">
           <div className="min-w-0">
             {last && meter ? (
@@ -142,5 +151,64 @@ export function EnergyCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function CostRow({ costs }: { costs: EnergyCosts | undefined }) {
+  const active = costs?.active;
+  const forecast = active ? costs.forecasts[active.id] : undefined;
+  if (!costs || !active || !forecast) {
+    return (
+      <p className="border-t pt-3 text-sm text-muted-foreground">
+        Kein laufender Vertrag –{' '}
+        <Link
+          to="/vertraege"
+          className="font-medium text-foreground underline-offset-4 hover:underline"
+        >
+          Vertrag anlegen
+        </Link>{' '}
+        für Kosten und Abschlags-Check.
+      </p>
+    );
+  }
+  const balance = describeBalance(forecast.balanceEur);
+  const month = costs.monthToDate;
+  return (
+    <Link
+      to={`/vertraege/${active.id}`}
+      aria-label={`Kosten und Abschlag ${active.provider}`}
+      className="-mx-2 grid grid-cols-2 gap-3 rounded-xl border-t px-2 pt-3 text-sm transition-colors hover:bg-accent/40"
+    >
+      <span className="flex flex-col">
+        <span className="text-xs text-muted-foreground">Kosten diesen Monat</span>
+        <span className="font-semibold tabular-nums">
+          {month ? formatEur(month.totalEur) : '–'}
+        </span>
+        {month && month.estimatedDays > 0 ? (
+          <span className="text-xs text-muted-foreground">
+            davon {month.estimatedDays} Tage geschätzt
+          </span>
+        ) : null}
+      </span>
+      <span className="flex flex-col">
+        <span className="text-xs text-muted-foreground">Abschlags-Saldo</span>
+        <span
+          className={cn(
+            'font-semibold tabular-nums',
+            balance.label === 'Guthaben' && 'text-savings',
+            balance.label === 'Nachzahlung' && 'text-warning',
+          )}
+        >
+          {balance.label}
+          {balance.label === 'Ausgeglichen' ? '' : ` ${balance.amount}`}
+        </span>
+        <span className="text-xs text-muted-foreground">
+          bis {formatDate(forecast.periodTo)}
+          {Number.isFinite(forecast.recommendedEur)
+            ? ` · Abschlag ${formatEur(Math.max(0, forecast.recommendedEur))} empfohlen`
+            : ''}
+        </span>
+      </span>
+    </Link>
   );
 }

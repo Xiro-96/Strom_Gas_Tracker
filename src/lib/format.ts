@@ -81,9 +81,9 @@ export function formatTrend(ratio: number): string {
   return `${pct > 0 ? '+' : '−'}${Math.abs(pct)} %`;
 }
 
-/** 28.47 → „28,47 ct/kWh“ (2–4 Nachkommastellen, Spec 6.1) */
-export function formatCt(value: number): string {
-  return `${nf(2, 4).format(value)} ct/kWh`;
+/** 28.47 → „28,47 ct/kWh“ (2–4 Nachkommastellen, Spec 6.1); Effektivpreise mit `maxDigits` 2. */
+export function formatCt(value: number, maxDigits = 4): string {
+  return `${nf(2, maxDigits).format(value)} ct/kWh`;
 }
 
 /** Saldo > 0 = Nachzahlung, < 0 = Guthaben */

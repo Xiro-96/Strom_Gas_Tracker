@@ -17,19 +17,22 @@ import {
 import { addDays } from '@/domain/dates';
 import type { EnergyType } from '@/domain/types';
 import { CumulativeChart, DailyStepChart, MonthlyBarsChart } from '@/features/analytics/charts';
+import { CostCharts } from '@/features/analytics/CostCharts';
 import { ENERGY } from '@/features/shared/energy';
-import { useEnergyData } from '@/features/shared/useEnergyData';
+import { useCostData } from '@/features/contracts/useCostData';
 import { formatDate, formatKwh, formatMonth, formatNumber, formatTrend } from '@/lib/format';
 
 const RANGES: { value: ChartRange; label: string; short: string }[] = [
   { value: '3m', label: '3 Monate', short: '3 M' },
   { value: '12m', label: '12 Monate', short: '12 M' },
   { value: 'year', label: 'Dieses Jahr', short: 'Jahr' },
+  { value: 'contract', label: 'Laufender Vertrag', short: 'Vertrag' },
   { value: 'all', label: 'Alles', short: 'Alles' },
 ];
 
 export function AnalyticsPage() {
-  const data = useEnergyData();
+  const cost = useCostData();
+  const data = cost.status === 'ready' ? cost.energy : cost;
   const [selected, setSelected] = useState<EnergyType | undefined>();
   const [range, setRange] = useState<ChartRange>('12m');
   const energy =
@@ -39,11 +42,20 @@ export function AnalyticsPage() {
         : data.energies[0]
       : undefined;
   const analysis = energy && data.status === 'ready' ? data.analyses[energy] : undefined;
+  const costs = energy && cost.status === 'ready' ? cost.byEnergy[energy] : undefined;
+  const currentForecast = costs?.currentForecast;
+  const ranges = RANGES.filter((r) => r.value !== 'contract' || currentForecast);
 
   const view = useMemo(() => {
     if (!analysis || analysis.intervals.length === 0) return null;
     const lastDay = addDays(analysis.intervals.at(-1)?.to ?? '', -1);
-    const bounds = rangeBounds(range, lastDay);
+    const bounds = rangeBounds(
+      range,
+      lastDay,
+      currentForecast
+        ? { from: currentForecast.periodFrom, to: currentForecast.periodTo }
+        : undefined,
+    );
     return {
       bounds,
       current: stepSeries(analysis.intervals, bounds),
@@ -52,7 +64,7 @@ export function AnalyticsPage() {
       months: monthlyComparison(analysis.daily, bounds),
       years: cumulativeYears(analysis.daily, 3),
     };
-  }, [analysis, range]);
+  }, [analysis, range, currentForecast]);
 
   const header = (
     <PageHeader
@@ -122,7 +134,7 @@ export function AnalyticsPage() {
             if (next) setRange(next.value);
           }}
         >
-          {RANGES.map((r) => (
+          {ranges.map((r) => (
             <ToggleGroupItem key={r.value} value={r.value} aria-label={r.label}>
               {r.short}
             </ToggleGroupItem>
@@ -205,6 +217,8 @@ export function AnalyticsPage() {
       >
         <CumulativeChart years={view.years} color={color} />
       </ChartCard>
+
+      <CostCharts energy={energy} costs={costs} bounds={view.bounds} />
     </>
   );
 }

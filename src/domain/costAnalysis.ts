@@ -1,5 +1,11 @@
 import { contractForecast } from '@/domain/contractForecast';
-import { delivers, effectivePriceCt, pricePeriodAt, type PriceLike } from '@/domain/costs';
+import {
+  costBreakdown,
+  delivers,
+  effectivePriceCt,
+  pricePeriodAt,
+  type PriceLike,
+} from '@/domain/costs';
 import { addDays, daysInYear, eachDay, maxDate, minDate, monthKey, yearOf } from '@/domain/dates';
 import type { DailyPoint } from '@/domain/distribution';
 import { projectedDaily } from '@/domain/forecast';
@@ -198,4 +204,39 @@ export function effectivePriceHistory(
       };
     })
     .sort((a, b) => a.year - b.year);
+}
+
+/** Übersicht: Kosten des laufenden Monats bis heute – Ist bis zur letzten Ablesung, danach geschätzt. */
+export function monthToDateCost(input: {
+  bundles: readonly ContractBundle[];
+  daily: readonly DailyPoint[];
+  annualKwh: number | null;
+  energyType: EnergyType;
+  baseLoadShare: number;
+  today: ISODate;
+}): { totalEur: number; kwh: number; days: number; estimatedDays: number } | null {
+  const from = `${monthKey(input.today)}-01`;
+  const end = addDays(input.today, 1);
+  const actual = input.daily.filter((p) => p.date >= from && p.date < end);
+  const lastAll = input.daily.at(-1)?.date;
+  const projectFrom = lastAll && lastAll >= from ? addDays(lastAll, 1) : from;
+  const projected =
+    input.annualKwh !== null && projectFrom < end
+      ? projectedDaily(input.annualKwh, projectFrom, end, {
+          energyType: input.energyType,
+          baseLoadShare: input.baseLoadShare,
+        })
+      : [];
+  const series = [...actual, ...projected];
+  let result: { totalEur: number; kwh: number; days: number; estimatedDays: number } | null = null;
+  for (const bundle of input.bundles) {
+    const part = costBreakdown(series, bundle, bundle.periods, from, end);
+    if (part.days === 0) continue;
+    result ??= { totalEur: 0, kwh: 0, days: 0, estimatedDays: 0 };
+    result.totalEur += part.totalEur;
+    result.kwh += part.kwh;
+    result.days += part.days;
+  }
+  if (result) result.estimatedDays = projected.length;
+  return result;
 }

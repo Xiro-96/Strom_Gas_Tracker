@@ -1,4 +1,4 @@
-import { costBreakdown, effectivePriceCt, pricePeriodAt } from '@/domain/costs';
+import { annualCostEur, costBreakdown, effectivePriceCt, pricePeriodAt } from '@/domain/costs';
 import { distribute } from '@/domain/distribution';
 import { buildIntervals } from '@/domain/intervals';
 
@@ -120,5 +120,13 @@ describe('effectivePriceCt – Testfall D', () => {
     expect(result.totalWithBonusEur).toBeCloseTo(930, 9);
     expect(result.withBonusCt.toFixed(2)).toBe('26.57');
     expect(result.withoutBonusCt.toFixed(2)).toBe('32.29');
+  });
+});
+
+describe('annualCostEur – Jahreskosten zum aktuellen Preis', () => {
+  it('rechnet kWh × Arbeitspreis + Grundpreis, ohne Boni', () => {
+    expect(
+      annualCostEur(3000, { validFrom: '2026-01-01', energyPriceCt: 30, basePriceEurPerYear: 150 }),
+    ).toBeCloseTo(1050, 9);
   });
 });

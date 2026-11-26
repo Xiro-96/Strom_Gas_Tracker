@@ -41,6 +41,10 @@
   /* Diagrammfarben (dataviz-Validator: Lightness-Band, CVD, Kontrast geprüft) */
   --chart-electricity: oklch(0.56 0.14 62);
   --chart-gas: oklch(0.52 0.13 240);
+  /* Kosten je Monat: Grundpreis (gleicher Farbton) und Boni – Stapel validiert (CVD, Lightness) */
+  --chart-electricity-base: oklch(0.72 0.11 62);
+  --chart-gas-base: oklch(0.69 0.11 240);
+  --chart-bonus: oklch(0.49 0.12 155);
 
   --shadow-card: 0 1px 2px oklch(0.2 0.02 260 / 6%), 0 8px 24px -12px oklch(0.2 0.02 260 / 18%);
 }
@@ -75,6 +79,9 @@
 
   --chart-electricity: oklch(0.7 0.15 72);
   --chart-gas: oklch(0.66 0.13 228);
+  --chart-electricity-base: oklch(0.5 0.11 72);
+  --chart-gas-base: oklch(0.5 0.11 240);
+  --chart-bonus: oklch(0.62 0.12 155);
 
   --shadow-card: 0 1px 0 oklch(1 0 0 / 4%) inset, 0 12px 32px -16px oklch(0 0 0 / 60%);
 }

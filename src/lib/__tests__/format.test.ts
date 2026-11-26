@@ -50,6 +50,7 @@ describe('format (de-DE)', () => {
   });
 
   it('formatiert Preise und Salden', () => {
+    expect(formatCt(30.50523, 2)).toBe('30,51 ct/kWh');
     expect(formatCt(28.47)).toBe('28,47 ct/kWh');
     expect(formatCt(9.0512)).toBe('9,0512 ct/kWh');
     expect(describeBalance(-160).label).toBe('Guthaben');

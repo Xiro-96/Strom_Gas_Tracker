@@ -9,11 +9,12 @@ import { removeDemoData } from '@/data/repositories/demo';
 import { todayISO } from '@/domain/dates';
 import { Onboarding } from '@/features/onboarding/Onboarding';
 import { EnergyCard } from '@/features/overview/EnergyCard';
-import { useEnergyData } from '@/features/shared/useEnergyData';
+import { useCostData } from '@/features/contracts/useCostData';
 import { formatDateLong } from '@/lib/format';
 
 export function OverviewPage() {
-  const data = useEnergyData();
+  const cost = useCostData();
+  const data = cost.status === 'ready' ? cost.energy : cost;
   const hasDemo = useHasDemoData();
 
   return (
@@ -55,6 +56,7 @@ export function OverviewPage() {
                   analysis={analysis}
                   readingIntervalDays={data.settings.readingIntervalDays}
                   baseLoadShare={data.settings.gasBaseLoadShare}
+                  costs={cost.status === 'ready' ? cost.byEnergy[energy] : undefined}
                 />
               ) : null;
             })}

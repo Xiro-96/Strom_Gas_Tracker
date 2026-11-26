@@ -98,3 +98,8 @@ export function effectivePriceCt(input: {
     withBonusCt: input.kwh > 0 ? (totalWithBonusEur / input.kwh) * 100 : NaN,
   };
 }
+
+/** Jahreskosten einer Prognose zum gegebenen Preis (ohne Boni): kWh × AP ÷ 100 + GP. */
+export function annualCostEur(kwh: number, price: PriceLike): number {
+  return (kwh * price.energyPriceCt) / 100 + price.basePriceEurPerYear;
+}

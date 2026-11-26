@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router';
 import { BottomNav } from '@/app/layout/BottomNav';
 import { Sidebar } from '@/app/layout/Sidebar';
+import { WeatherSync } from '@/features/settings/WeatherSync';
 import { StartupHints } from '@/features/switch/StartupHints';
 
 export function AppLayout() {
@@ -34,6 +35,7 @@ export function AppLayout() {
       </main>
       <BottomNav />
       <StartupHints />
+      <WeatherSync />
     </div>
   );
 }

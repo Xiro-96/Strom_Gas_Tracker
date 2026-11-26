@@ -34,6 +34,8 @@ export interface ContractForecastInput {
   annualKwh: number | null;
   baseLoadShare: number;
   today: ISODate;
+  /** Optionale Tagesgewichte (Gas mit Wetterdaten, Phase 4); sonst Gradtag-Promille. */
+  weight?: ((date: ISODate) => number) | undefined;
 }
 
 export interface BonusWarning {
@@ -94,6 +96,7 @@ export function contractForecast(input: ContractForecastInput): ContractForecast
       ? projectedDaily(input.annualKwh, projectFrom, end, {
           energyType: contract.energyType,
           baseLoadShare: input.baseLoadShare,
+          ...(input.weight ? { weight: input.weight } : {}),
         })
       : [];
 

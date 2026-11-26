@@ -109,6 +109,7 @@ export function cumulativeCostSeries(input: {
   annualKwh: number | null;
   baseLoadShare: number;
   today: ISODate;
+  weight?: ((date: ISODate) => number) | undefined;
 }): CumulativePoint[] {
   const { bundle } = input;
   const forecast = contractForecast({
@@ -120,6 +121,7 @@ export function cumulativeCostSeries(input: {
     annualKwh: input.annualKwh,
     baseLoadShare: input.baseLoadShare,
     today: input.today,
+    weight: input.weight,
   });
   const end = addDays(forecast.periodTo, 1);
   const actual = input.daily.filter((p) => p.date >= forecast.periodFrom && p.date < end);
@@ -130,6 +132,7 @@ export function cumulativeCostSeries(input: {
       ? projectedDaily(input.annualKwh, projectFrom, end, {
           energyType: bundle.energyType,
           baseLoadShare: input.baseLoadShare,
+          ...(input.weight ? { weight: input.weight } : {}),
         })
       : [];
   const kwhByDay = new Map([...actual, ...projected].map((p) => [p.date, p.kwh]));
@@ -214,6 +217,7 @@ export function monthToDateCost(input: {
   energyType: EnergyType;
   baseLoadShare: number;
   today: ISODate;
+  weight?: ((date: ISODate) => number) | undefined;
 }): { totalEur: number; kwh: number; days: number; estimatedDays: number } | null {
   const from = `${monthKey(input.today)}-01`;
   const end = addDays(input.today, 1);
@@ -225,6 +229,7 @@ export function monthToDateCost(input: {
       ? projectedDaily(input.annualKwh, projectFrom, end, {
           energyType: input.energyType,
           baseLoadShare: input.baseLoadShare,
+          ...(input.weight ? { weight: input.weight } : {}),
         })
       : [];
   const series = [...actual, ...projected];

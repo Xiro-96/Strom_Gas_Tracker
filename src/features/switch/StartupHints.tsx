@@ -35,7 +35,7 @@ export function StartupHints() {
     const today = todayISO();
     if (shownToday(today)) return;
     let cancelled = false;
-    void Promise.all([
+    Promise.all([
       listContracts(),
       pricePeriods.list(),
       bonuses.list(),
@@ -43,38 +43,40 @@ export function StartupHints() {
       listReadings(),
       listMeters(),
       getSettings(),
-    ]).then(([c, p, b, bi, r, m, s]) => {
-      if (cancelled) return;
-      const urgent = openDeadlines(
-        collectDeadlines({
-          contracts: c,
-          pricePeriods: p,
-          bonuses: b,
-          bills: bi,
-          readings: r,
-          meters: m,
-          settings: s,
+    ])
+      .then(([c, p, b, bi, r, m, s]) => {
+        if (cancelled) return;
+        const urgent = openDeadlines(
+          collectDeadlines({
+            contracts: c,
+            pricePeriods: p,
+            bonuses: b,
+            bills: bi,
+            readings: r,
+            meters: m,
+            settings: s,
+            today,
+          }),
           today,
-        }),
-        today,
-      ).filter(isUrgent);
-      const first = urgent[0];
-      if (!first) return;
-      markShown(today);
-      toast.warning(`${first.deadline.title} – ${formatCountdown(first.days)}`, {
-        description:
-          urgent.length > 1
-            ? `Und ${String(urgent.length - 1)} weitere dringende Fristen.`
-            : first.deadline.detail,
-        duration: 12_000,
-        action: {
-          label: 'Ansehen',
-          onClick: () => {
-            void navigate('/wechsel');
+        ).filter(isUrgent);
+        const first = urgent[0];
+        if (!first) return;
+        markShown(today);
+        toast.warning(`${first.deadline.title} – ${formatCountdown(first.days)}`, {
+          description:
+            urgent.length > 1
+              ? `Und ${String(urgent.length - 1)} weitere dringende Fristen.`
+              : first.deadline.detail,
+          duration: 12_000,
+          action: {
+            label: 'Ansehen',
+            onClick: () => {
+              void navigate('/wechsel');
+            },
           },
-        },
-      });
-    });
+        });
+      })
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };

@@ -6,6 +6,7 @@ import { lastWindowAverage, readingStatus, trendVsPreviousYear } from '@/domain/
 import { todayISO } from '@/domain/dates';
 import { forecastAnnual, type AnnualForecast } from '@/domain/forecast';
 import { gasFactorsAt } from '@/domain/gas';
+import { adjustedTrend } from '@/domain/weather';
 import type { EnergyCosts } from '@/features/contracts/useCostData';
 import { Sparkline } from '@/features/overview/Sparkline';
 import { ENERGY } from '@/features/shared/energy';
@@ -42,12 +43,17 @@ export function EnergyCard({
   const Icon = meta.icon;
   const avg = lastWindowAverage(analysis.daily, 30);
   const trend = avg ? trendVsPreviousYear(analysis.daily, avg.from, avg.to) : null;
+  const adjusted =
+    avg && analysis.weight
+      ? adjustedTrend(analysis.daily, avg.from, avg.to, analysis.weight)
+      : null;
   const last = analysis.lastReading;
   const status = readingStatus(last?.date, todayISO(), readingIntervalDays);
   const meter = analysis.currentMeter;
   const forecast = forecastAnnual(analysis.daily, analysis.intervals, {
     energyType: analysis.energyType,
     baseLoadShare,
+    ...(analysis.weight ? { weight: analysis.weight } : {}),
   });
   const factors = meter && last ? gasFactorsAt(meter, last.date) : undefined;
   const forecastM3 =
@@ -88,6 +94,7 @@ export function EnergyCard({
                     {formatTrend(trend)}
                   </span>{' '}
                   ggü. Vorjahr
+                  {adjusted ? <> · bereinigt {formatTrend(adjusted.adjusted)}</> : null}
                 </>
               ) : null}
             </p>

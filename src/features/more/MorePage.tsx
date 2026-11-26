@@ -11,6 +11,7 @@ import { MetersSection } from '@/features/settings/MetersSection';
 import { PreferencesSection } from '@/features/settings/PreferencesSection';
 import { ReferenceTariffsSection } from '@/features/settings/ReferenceTariffsSection';
 import { ThemeSetting } from '@/features/settings/ThemeSetting';
+import { WeatherSection } from '@/features/settings/WeatherSection';
 
 export function MorePage() {
   return (
@@ -42,6 +43,7 @@ export function MorePage() {
       <CalendarSection />
       <PreferencesSection />
       <ReferenceTariffsSection />
+      <WeatherSection />
 
       <Card>
         <CardHeader>

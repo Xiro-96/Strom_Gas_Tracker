@@ -76,6 +76,7 @@ export function useCostData() {
         ? forecastAnnual(daily, analysis.intervals, {
             energyType,
             baseLoadShare: energy.settings.gasBaseLoadShare,
+            ...(analysis.weight ? { weight: analysis.weight } : {}),
           })
         : null;
       const active = bundles.find((b) => delivers(b, today));
@@ -91,6 +92,7 @@ export function useCostData() {
           annualKwh: annual?.kwh ?? null,
           baseLoadShare: energy.settings.gasBaseLoadShare,
           today,
+          weight: analysis?.weight,
         });
       const forecasts = bundles.map((bundle) => ({ bundle, forecast: forecastFor(bundle) }));
       byEnergy[energyType] = {
@@ -109,6 +111,7 @@ export function useCostData() {
           energyType,
           baseLoadShare: energy.settings.gasBaseLoadShare,
           today,
+          weight: analysis?.weight,
         }),
         savings: (() => {
           const reference = energy.settings.referenceTariffs.find(
@@ -124,6 +127,7 @@ export function useCostData() {
               annualKwh: annual?.kwh ?? null,
               baseLoadShare: energy.settings.gasBaseLoadShare,
               today,
+              weight: analysis?.weight,
             })
           : [],
         effective: effectivePriceHistory(

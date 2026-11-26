@@ -157,3 +157,31 @@ export function meterReadingMessage(input: {
   ].join('\n');
   return { subject: `Zählerstand ${word} zum ${formatDate(reading.date)}`, body };
 }
+
+/** Nachlauf nach Lieferende (Schlussrechnung, Bonus, Guthaben) bleibt so lange im Cockpit. */
+export const AFTERCARE_DAYS = 180;
+
+/** Verträge fürs Wechsel-Cockpit: laufende und kürzlich beendete; Strom vor Gas, dann nach Beginn. */
+export function cockpitContracts(contracts: readonly Contract[], today: ISODate): Contract[] {
+  return contracts
+    .filter((c) => {
+      if (c.deliveryStart > today) return false;
+      if (!c.deliveryEnd || c.deliveryEnd >= today) return true;
+      return daysBetween(c.deliveryEnd, today) <= AFTERCARE_DAYS;
+    })
+    .sort(
+      (a, b) =>
+        Number(a.energyType === 'gas') - Number(b.energyType === 'gas') ||
+        a.deliveryStart.localeCompare(b.deliveryStart),
+    );
+}
+
+/** Nächster Vertrag derselben Energieart (Lieferbeginn danach). */
+export function successorOf(
+  contract: Contract,
+  contracts: readonly Contract[],
+): Contract | undefined {
+  return contracts
+    .filter((c) => c.energyType === contract.energyType && c.deliveryStart > contract.deliveryStart)
+    .sort((a, b) => a.deliveryStart.localeCompare(b.deliveryStart))[0];
+}

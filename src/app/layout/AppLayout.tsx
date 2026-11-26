@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router';
 import { BottomNav } from '@/app/layout/BottomNav';
 import { Sidebar } from '@/app/layout/Sidebar';
+import { StartupHints } from '@/features/switch/StartupHints';
 
 export function AppLayout() {
   const { pathname } = useLocation();
@@ -32,6 +33,7 @@ export function AppLayout() {
         </div>
       </main>
       <BottomNav />
+      <StartupHints />
     </div>
   );
 }

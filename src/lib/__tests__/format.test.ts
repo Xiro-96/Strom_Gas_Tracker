@@ -1,5 +1,6 @@
 import {
   describeBalance,
+  formatCountdown,
   formatCt,
   formatDate,
   formatDateShort,
@@ -57,5 +58,15 @@ describe('format (de-DE)', () => {
     expect(n(describeBalance(-160).amount)).toBe('160,00 €');
     expect(describeBalance(42).label).toBe('Nachzahlung');
     expect(describeBalance(0.2).label).toBe('Ausgeglichen');
+  });
+});
+
+describe('formatCountdown', () => {
+  it('beschreibt Restzeit und Überschreitung deutsch', () => {
+    expect(formatCountdown(0)).toBe('heute');
+    expect(formatCountdown(1)).toBe('morgen');
+    expect(formatCountdown(6)).toBe('noch 6 Tage');
+    expect(formatCountdown(-1)).toBe('seit 1 Tag überfällig');
+    expect(formatCountdown(-3)).toBe('seit 3 Tagen überfällig');
   });
 });

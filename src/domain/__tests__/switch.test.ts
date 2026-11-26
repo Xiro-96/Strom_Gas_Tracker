@@ -1,6 +1,8 @@
 import {
   cancellationLetter,
+  cockpitContracts,
   meterReadingMessage,
+  successorOf,
   SWITCH_STEPS,
   suggestedDeliveryEnd,
   switchProgress,
@@ -210,5 +212,27 @@ describe('Wechsel-Checkliste', () => {
     expect(credit(bill(30))).toBe(true);
     expect(credit(bill(-30))).toBe(false);
     expect(credit(bill(-30, '2027-02-01'))).toBe(true);
+  });
+});
+
+describe('Verträge im Cockpit', () => {
+  const list = [
+    contract({ id: 'old', deliveryStart: '2025-01-01', deliveryEnd: '2025-12-31' }),
+    contract({ id: 'gone', deliveryStart: '2024-01-01', deliveryEnd: '2024-12-31' }),
+    contract({ id: 'now', deliveryStart: '2026-01-01', deliveryEnd: '2026-12-31' }),
+    contract({ id: 'next', deliveryStart: '2027-01-01' }),
+    contract({ id: 'gas', energyType: 'gas', deliveryStart: '2026-01-01' }),
+  ];
+
+  it('zeigt laufende Verträge und den Nachlauf beendeter (≤ 180 Tage), Strom vor Gas', () => {
+    expect(cockpitContracts(list, '2026-03-01').map((c) => c.id)).toEqual(['old', 'now', 'gas']);
+    expect(cockpitContracts(list, '2027-01-10').map((c) => c.id)).toEqual(['now', 'next', 'gas']);
+  });
+
+  it('findet den Nachfolger derselben Energieart', () => {
+    const [, , now, next] = list;
+    if (!now || !next) throw new Error('Testdaten');
+    expect(successorOf(now, list)?.id).toBe('next');
+    expect(successorOf(next, list)).toBeUndefined();
   });
 });

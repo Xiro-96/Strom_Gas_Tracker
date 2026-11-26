@@ -6,6 +6,7 @@ import {
   deleteContract,
   listContracts,
   pricePeriods,
+  setSwitchStep,
   transactions,
   updateContract,
   type NewContractBundle,
@@ -134,5 +135,19 @@ describe('Verträge', () => {
       changeNoticeReceivedAt: '2026-05-20',
     });
     expect((await pricePeriods.list([c.id])).map((p) => p.energyPriceCt)).toEqual([30, 33]);
+  });
+});
+
+describe('Wechsel-Checkliste', () => {
+  it('setzt und entfernt Haken, ohne andere Felder zu ändern', async () => {
+    const c = await createContract(bundle('2026-01-01', '2026-12-31'));
+    await setSwitchStep(c.id, 'reported', '2027-01-02');
+    await setSwitchStep(c.id, 'offer_chosen', '2026-11-20');
+    let [saved] = await listContracts();
+    expect(saved?.switchChecklist).toEqual({ reported: '2027-01-02', offer_chosen: '2026-11-20' });
+    expect(saved?.deliveryEnd).toBe('2026-12-31');
+    await setSwitchStep(c.id, 'reported', null);
+    [saved] = await listContracts();
+    expect(saved?.switchChecklist).toEqual({ offer_chosen: '2026-11-20' });
   });
 });

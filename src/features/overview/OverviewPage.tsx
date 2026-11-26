@@ -9,11 +9,13 @@ import { removeDemoData } from '@/data/repositories/demo';
 import { todayISO } from '@/domain/dates';
 import { Onboarding } from '@/features/onboarding/Onboarding';
 import { EnergyCard } from '@/features/overview/EnergyCard';
-import { useCostData } from '@/features/contracts/useCostData';
+import { DeadlineBar } from '@/features/overview/DeadlineBar';
+import { useDeadlines } from '@/features/switch/useDeadlines';
 import { formatDateLong } from '@/lib/format';
 
 export function OverviewPage() {
-  const cost = useCostData();
+  const fristen = useDeadlines();
+  const cost = fristen.status === 'ready' ? fristen.cost : fristen;
   const data = cost.status === 'ready' ? cost.energy : cost;
   const hasDemo = useHasDemoData();
 
@@ -46,6 +48,9 @@ export function OverviewPage() {
                 Entfernen
               </Button>
             </div>
+          ) : null}
+          {fristen.status === 'ready' ? (
+            <DeadlineBar deadlines={fristen.deadlines} today={fristen.today} />
           ) : null}
           <div className="grid gap-4 sm:grid-cols-2">
             {data.energies.map((energy) => {

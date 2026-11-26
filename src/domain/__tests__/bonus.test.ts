@@ -65,3 +65,17 @@ describe('Bonus-Fälligkeit und Status', () => {
     ).toBe('received');
   });
 });
+
+describe('Bonus – Randfälle', () => {
+  it('formatiert Einzahl und leere Dauer', () => {
+    expect(formatDuration({ months: 1, days: 1 })).toBe('1 Monat und 1 Tag');
+    expect(formatDuration({ months: 0, days: 0 })).toBe('0 Tage');
+  });
+
+  it('nimmt ein vereinbartes Fälligkeitsdatum und rechnet Mindestbelieferung ohne Angabe mit 12 Monaten', () => {
+    expect(bonusExpectedDate({ kind: 'loyalty', expectedDate: '2026-05-01' }, '2026-01-01')).toBe(
+      '2026-05-01',
+    );
+    expect(bonusExpectedDate({ kind: 'new_customer' }, '2026-01-01')).toBe('2027-01-01');
+  });
+});

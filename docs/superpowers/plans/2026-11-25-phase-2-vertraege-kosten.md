@@ -11,6 +11,7 @@
 ## Global Constraints
 
 Wie Phase 0/1. Zusätzlich:
+
 - Preise intern immer ct/kWh brutto und €/Jahr brutto; Eingabe alternativ €/m³ (Gas) bzw. €/Monat.
 - Boni nie in den Arbeitspreis einrechnen – immer separat ausweisen.
 - Tage ohne Vertrag sind Lücken, nie 0 €.
@@ -27,22 +28,29 @@ Wie Phase 0/1. Zusätzlich:
 ---
 
 ### Task 1: Domain – Kosten (A, B, D)
+
 `pricePeriodAt`, `contractForDay`, `costBreakdown(daily, contract, periods, from, to)`, `effectivePriceCt`.
 
 ### Task 2: Domain – Bonus (H) und Abschläge (F)
+
 `bonusSafety(deliveryStart, lastDeliveryDay, months)`, `bonusExpectedDate`, `installmentDueDates(plan, from, to)`, `balanceForecast`, `recommendedInstallment`.
 
 ### Task 3: Domain – Kostenprognose (C-Teilzeitraum)
+
 `projectKwh(annual, from, to, energy, baseLoad)`, `contractForecast(...)`: Ist bis zum letzten Datentag plus Prognose bis Lieferende bzw. Ende des Vertragsjahres; Saldo und empfohlener Abschlag.
 
 ### Task 4: Daten
+
 Repositories `contracts` (Überlappungsprüfung), `pricePeriods`, `bonuses`, `bills`, `transactions`; Hooks; Demo-Daten um Abschläge und Schlussrechnungen ergänzen.
 
 ### Task 5: UI – Vertrags-Assistent und Detailseite
+
 4 Schritte; Detail mit Preisperioden, Boni (Status-Workflow, Sicherheitscheck), Abschlagsplan, Transaktionen, Rechnungen, Kündigung, Notizen; „So gerechnet“-Popover; Gasfaktoren-Historie am Zähler.
 
 ### Task 6: UI – Kosten in Übersicht und Auswertung
+
 Kostenkarten (laufender Monat, Prognose, Saldo); Diagramme 4 (Kosten je Monat), 5 (Abschläge vs. Kosten kumuliert), 7 (Effektivpreis je Vertragsjahr); Zeitraum „Vertrag“.
 
 ### Task 7: E2E, Doku, Abnahme
+
 Vertrag anlegen → Kosten und Saldo sichtbar; ROADMAP/DECISIONS; verify, e2e, Lighthouse.

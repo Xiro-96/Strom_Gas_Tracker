@@ -81,3 +81,45 @@ Format: Datum · Entscheidung · Grund.
 27. **Jahresprognose (kWh) aus Phase 2 vorgezogen** – der Nutzer braucht sie für den anstehenden
     Neuabschluss. Strom: letzte 365 Tage, sonst Ø 90 Tage × 365. Gas: Normaljahr über höchstens die
     letzten 365 Tage. Unter 3 Intervallen „unsicher“ mit ±20 % Spanne. Kosten in € folgen in Phase 2.
+
+## Phase 2 – Verträge, Preise, Boni, Kosten (26.11.2026)
+
+28. **Überlappungsprüfung je Energieart**, nicht je Zähler: Ein Haushalt hat je Energieart genau
+    einen Liefervertrag; ein Zählerwechsel ändert den Vertrag nicht. Speichern wird mit deutscher
+    Meldung abgelehnt.
+29. **Vertragsstatus in der Anzeige** wird aus den Daten abgeleitet (`contractStatus`: Lieferende
+    vorbei → beendet, Kündigung gesendet → gekündigt, Lieferbeginn in der Zukunft → geplant). Das
+    gespeicherte Feld kann sonst veralten.
+30. **Abrechnungszeitraum** = bis Lieferende, sonst laufendes Vertragsjahr ab Lieferbeginn. Darauf
+    beziehen sich Saldo, empfohlener Abschlag, Diagramm 5 und der Zeitraum „Vertrag“.
+31. **Boni im Saldo:** gezählt werden zugesagt, fällig, erhalten, verrechnet. Boni mit nicht
+    erreichter Mindestbelieferung fallen heraus und werden rot gewarnt (lieber zu vorsichtig).
+    Nur „mit Rechnung verrechnet“ mindert den Saldo; überwiesene Boni zählen im Effektivpreis.
+32. **Transaktionen:** Nur „Abschlag (Abweichung)“ und „Sonstiges“ verändern den Abschlags-Saldo.
+    Bonus-Auszahlung, Erstattung und Rechnungsausgleich sind Geldflüsse nach der Abrechnung.
+33. **Übersicht:** „Kosten diesen Monat“ = Ist bis zur letzten Ablesung, danach mit der
+    Jahresprognose geschätzt (Zahl der geschätzten Tage steht dabei). Jahreskosten =
+    Prognose-kWh × heutiger Arbeitspreis + Grundpreis, ohne Boni.
+34. **Formulare:** Der Assistent nutzt react-hook-form + zod mit Validierung je Schritt. Die
+    Detailseite nutzt kurze Inline-Formulare mit einem kleinen `useDraft`-Hook und Validierung von
+    Hand. Der Assistent ist nur zum Anlegen da; Änderungen laufen über die Abschnitte der Detailseite.
+35. **Kündigung:** „Gesendet am“ setzt den Status „gekündigt“. Das bestätigte Lieferende wird als
+    Lieferende übernommen, damit Prognose, Saldo und Bonus-Check sofort damit rechnen.
+36. **Gasfaktoren-Historie:** gleiches „gültig ab“ = Korrektur, neues Datum = neuer Abschnitt
+    (`upsertGasFactors`). Beim Anlegen gelten die Faktoren ab dem Startdatum.
+37. **Diagrammfarben Phase 2:** Grundpreis als zweiter Ton derselben Energiefarbe, Boni
+    `--chart-bonus` (grün), Abschlag als Referenzlinie in Textfarbe (keine Kategorienfarbe).
+    Stapel [Boni | Grundpreis | Arbeitspreis] mit dem dataviz-Validator geprüft (hell und dunkel:
+    CVD ΔE ≥ 12, Normalsicht ΔE ≥ 16). Die Kontrast-Warnung des hellen Grundpreis-Tons
+    (< 3:1) ist durch Legende, Tooltip und Tabellenansicht abgedeckt. Prognosen sind gestrichelt.
+38. **Kontrast im hellen Design:** Die Text-Tokens für Strom, Gas, Ersparnis, Warnung und Gefahr
+    sind leicht abgedunkelt (≥ 4,8:1 auch auf den 15-%-Badge-Flächen; axe hatte 3,8–4,4:1 gemeldet).
+    Die Diagrammfarben sind eigene Tokens und bleiben unverändert.
+39. **Anzeige:** Preise mit 2–4 Nachkommastellen, Effektivpreise mit 2. Nach einer erfassten
+    Rechnung mit Saldo zeigt die Vertragsliste den Rechnungssaldo statt der Prognose.
+40. **ESLint:** `no-unused-vars` mit `ignoreRestSiblings` (Muster `const { a: _a, ...rest } = obj`).
+    E2E: Die axe-Hilfe liegt in `tests/e2e/axe.ts` und nimmt Toasts aus (sie wurden zufällig mitten
+    in der Ausblend-Animation gemessen).
+41. **Messwerte Phase 2** (Lighthouse 12, mobil, lokaler Preview-Build, 3 Läufe): Performance 91–92,
+    Accessibility 100, Best Practices 100. Start-JS 203 KB gzip (Phase 1: 197 KB; +5 KB für die
+    Kosten in der Übersicht). Verträge, Detailseite und Diagramme werden lazy geladen.

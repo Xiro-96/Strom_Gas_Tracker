@@ -117,3 +117,32 @@ describe('monthToDateCost – Kosten laufender Monat (Übersicht)', () => {
     expect(monthToDateCost({ ...input, today: '2027-02-10' })).toBeNull();
   });
 });
+
+describe('Abweichungen vom Abschlagsplan in den Kostenreihen', () => {
+  const daily = eachDay('2026-01-01', '2026-03-01').map((date) => ({ date, kwh: 10 }));
+  const withTx = bundle({
+    transactions: [
+      { date: '2026-02-20', amountEur: -30 },
+      { date: '2027-05-01', amountEur: 99 },
+    ],
+  });
+
+  it('verrechnet Transaktionen im Monat (Diagramm 4), außerhalb des Zeitraums nicht', () => {
+    const months = monthlyCosts(daily, [withTx]);
+    expect(months.find((m) => m.month === '2026-02')?.installmentEur).toBe(0);
+    expect(months.some((m) => m.month === '2027-05')).toBe(false);
+  });
+
+  it('zieht Transaktionen in der kumulierten Abschlagslinie ab (Diagramm 5)', () => {
+    const points = cumulativeCostSeries({
+      bundle: withTx,
+      daily,
+      annualKwh: 3650,
+      baseLoadShare: 0.15,
+      today: '2026-03-01',
+    });
+    const feb = points.find((p) => p.date === '2026-02-28');
+    // Abschläge 15.01. und 15.02. je 30 €, Abweichung −30 € am 20.02.
+    expect(feb?.installmentsEur).toBe(30);
+  });
+});

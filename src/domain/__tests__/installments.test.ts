@@ -83,3 +83,24 @@ describe('Transaktionen im Abschlags-Check', () => {
     expect(installmentTransactions(tx).map((t) => t.amountEur)).toEqual([-100, 20]);
   });
 });
+
+describe('Abschlagsplan – Randfälle', () => {
+  it('liefert ohne Plan keine Termine', () => {
+    expect(installmentDueDates([], '2026-01-01', '2026-12-31')).toEqual([]);
+  });
+
+  it('beginnt erst ab „gültig ab“ und wechselt den Betrag zum neuen Eintrag', () => {
+    const dates = installmentDueDates(
+      [
+        { validFrom: '2026-01-20', amountEur: 100, dayOfMonth: 15 },
+        { validFrom: '2026-03-01', amountEur: 80, dayOfMonth: 15 },
+      ],
+      '2026-01-01',
+      '2026-03-31',
+    );
+    expect(dates).toEqual([
+      { date: '2026-02-15', amountEur: 100 },
+      { date: '2026-03-15', amountEur: 80 },
+    ]);
+  });
+});

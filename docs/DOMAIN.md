@@ -142,6 +142,10 @@ Kosten(d) = kWh(d) × Arbeitspreis(d) ÷ 100 + Grundpreis_Jahr(d) ÷ Tage_im_Kal
   stillschweigend 0 €.
 - Boni immer separat ausweisen, nie in den Arbeitspreis einrechnen.
 - **Effektivpreis** je Vertragsjahr = (Arbeitskosten + Grundkosten − Boni) ÷ kWh × 100 → ct/kWh.
+- Umsetzung: `costs.ts` (`costBreakdown`, `effectivePriceCt`, `annualCostEur`),
+  `costAnalysis.ts` (Monatskosten, kumulierte Kosten, Effektivpreis-Historie, Kosten laufender Monat).
+- **Abrechnungszeitraum** (`contractPeriod`): bis zum Lieferende, sonst das laufende Vertragsjahr
+  (12-Monats-Schritte ab Lieferbeginn, Monatsende nach BGB § 188).
 
 ### 8.4 Prognose
 
@@ -159,6 +163,14 @@ Kosten(d) = kWh(d) × Arbeitspreis(d) ÷ 100 + Grundpreis_Jahr(d) ÷ Tage_im_Kal
   → > 0 Nachzahlung, < 0 Guthaben.
 - `Empfohlener Abschlag = (Prognosekosten − verrechnete Boni − bereits gezahlt) ÷ verbleibende Abschläge`.
 - Beispieltext: „Voraussichtlich 160 € Guthaben – du könntest den Abschlag senken.“
+- Als Abweichung zählen nur Transaktionen der Art „Abschlag“ und „Sonstiges“
+  (`installmentTransactions`); Bonus-Auszahlung, Erstattung und Rechnungsausgleich nicht.
+- Gezählte Boni: zugesagt, fällig, erhalten, verrechnet (nicht: strittig, verfallen). Ein Bonus,
+  dessen Mindestbelieferung das geplante Lieferende nicht erreicht, fällt aus Saldo und
+  Effektivpreis heraus und wird rot gewarnt. Nur „mit Rechnung verrechnet“ mindert den Saldo;
+  überwiesene Boni zählen im Effektivpreis, nicht im Saldo.
+- Umsetzung: `installments.ts`, `contractForecast.ts` (Ist bis zur letzten Ablesung, danach
+  Prognose bis Ende des Abrechnungszeitraums).
 
 ### 8.6 Fristen
 

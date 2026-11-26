@@ -25,15 +25,15 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 - [x] Zusätzlich (aus Phase 2 vorgezogen, auf Wunsch): Jahresprognose in kWh je Energieart (6.4), Gas zusätzlich in m³
 - [x] **Abnahme:** Erfassung < 10 s (E2E), Testfälle G, I und Umrechnungsteil von B grün, Diagramme mit Demo-Daten geprüft
 
-## Phase 2 – Verträge, Preise, Boni, Kosten
+## Phase 2 – Verträge, Preise, Boni, Kosten ✅
 
-- [ ] Vertrags-Assistent (4 Schritte) und Detailseite, Preisperioden
-- [ ] Preiseingabe in ct/kWh oder €/m³, Grundpreis in €/Monat oder €/Jahr, Gasfaktoren am Zähler
-- [ ] Boni mit Status-Workflow und Bonus-Sicherheitscheck
-- [ ] Abschlagsplan, Transaktionen, Rechnungen
-- [ ] Kosten-Engine, Effektivpreis, Prognose in € (Verbrauchsprognose kWh seit Phase 1), Abschlags-Check
-- [ ] Diagramme 4, 5 und 7; Kostenkarten in der Übersicht; „So gerechnet“-Popover
-- [ ] **Abnahme:** Testfälle A, B, C, D, F und H grün
+- [x] Vertrags-Assistent (4 Schritte) und Detailseite, Preisperioden (mit Hinweis Sonderkündigungsrecht)
+- [x] Preiseingabe in ct/kWh oder €/m³, Grundpreis in €/Monat oder €/Jahr, Gasfaktoren am Zähler (mit „gültig ab“-Historie)
+- [x] Boni mit Status-Workflow und Bonus-Sicherheitscheck
+- [x] Abschlagsplan, Transaktionen, Rechnungen, Kündigung, Vertragsdaten, Notizen
+- [x] Kosten-Engine, Effektivpreis, Prognose in € (Verbrauchsprognose kWh seit Phase 1), Abschlags-Check
+- [x] Diagramme 4, 5 und 7; Kostenkarten in der Übersicht; „So gerechnet“-Popover; Zeitraum „Vertrag“
+- [x] **Abnahme:** Testfälle A, B, C, D, F und H grün; E2E „Vertrag anlegen → Kosten und Saldo sichtbar“
 
 ## Phase 3 – Wechsel-Cockpit und Erinnerungen
 
@@ -63,9 +63,9 @@ Jede Phase endet lauffähig und deployed. Details: `docs/MASTER_PROMPT.md`, Absc
 
 ## Später (Ideen, nicht eingeplant)
 
-- Routen per `lazy()` aufteilen, sobald Diagramme/Formulare das Bundle vergrößern.
 - WebKit-Projekt in Playwright ergänzen (echtes Safari-Verhalten), sobald CI-Zeit es erlaubt.
 - Icons für die Manifest-Shortcuts (Blitz/Flamme einzeln).
-- Auswertung: Zeitraum „Vertrag“ (braucht Verträge aus Phase 2).
-- Zeitabhängige Gasfaktoren-Historie im Zählerformular (Phase 2: „Gasfaktoren am Zähler“).
-- Kosten „≈ … €“ in der Live-Vorschau der Schnellerfassung (braucht Preise aus Phase 2).
+- Kosten „≈ … €“ in der Live-Vorschau der Schnellerfassung (Preise gibt es seit Phase 2).
+- Verbrauchsabhängiger Bonus (Spec 4.3, Falle 2): Flag `consumptionDependent` im Formular + Hinweis.
+- Lücken ohne Vertrag optional mit einem Referenztarif bewerten (Spec 6.3).
+- Vertrags-Assistent auch zum Bearbeiten (heute: Inline-Formulare auf der Detailseite).

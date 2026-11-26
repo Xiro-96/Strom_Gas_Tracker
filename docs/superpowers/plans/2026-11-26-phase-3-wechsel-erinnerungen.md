@@ -84,7 +84,7 @@
 
 **Files:** Create `src/features/overview/DeadlineBar.tsx`, `src/features/switch/StartupHints.tsx` (in `AppLayout`), `src/features/switch/exportCalendar.ts` (Blob-Download `strom-gas-fristen.ics`); Modify `OverviewPage.tsx`, `MorePage.tsx`/`DataSection.tsx` (Button „Kalender exportieren“)
 
-- [ ] Tests: Übersicht zeigt „eprimo kündigen · noch 4 Tage“-artige Leiste für die nächste offene Frist (Link ins Cockpit), überfällige Fristen rot; ohne Fristen keine Leiste. Start-Hinweis: Toast für Fristen ≤ 7 Tage/überfällig, höchstens einmal pro Tag (`localStorage` `sgt-hints-shown`, try/catch). Export erzeugt eine Datei mit `text/calendar`.
+- [ ] Tests: Übersicht zeigt „Blitzwerk kündigen · noch 4 Tage“-artige Leiste für die nächste offene Frist (Link ins Cockpit), überfällige Fristen rot; ohne Fristen keine Leiste. Start-Hinweis: Toast für Fristen ≤ 7 Tage/überfällig, höchstens einmal pro Tag (`localStorage` `sgt-hints-shown`, try/catch). Export erzeugt eine Datei mit `text/calendar`.
 - [ ] Commit.
 
 ### Task 6: UI – Wechsel-Cockpit `/wechsel`
